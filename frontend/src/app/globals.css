@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Import Google Fonts ──────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ─── Variables CSS TheFriends ─────────────────────────────────────── */
+:root {
+  --tf-black: #111111;
+  --tf-charbon: #1C1C1C;
+  --tf-gold: #C9A84C;
+  --tf-gold-light: #F0D080;
+  --tf-gold-dark: #B8892A;
+  --tf-bg: #FDFCFA;
+  --tf-surface: #FFFFFF;
+  --tf-gray-soft: #F5F4F1;
+  --tf-border: #E8E4DC;
+  --tf-text: #111111;
+  --tf-text-muted: #7A766F;
+}
+
+/* ─── Reset base ────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #FDFCFA;
+    color: #111111;
+    font-family: Inter, Helvetica Neue, Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Georgia pour les éléments éditoriaux de marque */
+  .font-brand {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+  }
+
+  /* Pas de dark mode — TheFriends reste clair */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #FDFCFA;
+      color: #111111;
+    }
+  }
+}
+
+/* ─── Animation barre oblique dorée hero ───────────────────────────── */
+@keyframes gold-sweep {
+  0%   { transform: rotate(-20deg) translateX(-200%); }
+  100% { transform: rotate(-20deg) translateX(500%); }
+}
+
+.hero-gold-glow {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 25%;
+  height: 300%;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(201, 168, 76, 0.13) 25%,
+    rgba(201, 168, 76, 0.03) 50%,
+    rgba(201, 168, 76, 0.13) 75%,
+    transparent 100%
+  );
+  animation: gold-sweep 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ─── Composants réutilisables ─────────────────────────────────────── */
+@layer components {
+  /* Bouton Principal */
+  .btn-primary {
+    @apply bg-tf-black text-white font-sans text-btn font-bold px-6 py-3 rounded-md
+           transition-colors duration-150 hover:bg-tf-charbon active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Bouton Or / Conversion (acheter, payer) */
+  .btn-gold {
+    @apply bg-tf-gold text-tf-black font-sans text-btn font-bold px-6 py-3 rounded-md
+           transition-colors duration-150 hover:bg-tf-gold-light active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Bouton Contour */
+  .btn-outline {
+    @apply bg-white text-tf-black border border-tf-border font-sans text-btn font-semibold
+           px-6 py-3 rounded-md transition-colors duration-150
+           hover:border-tf-text active:scale-[0.98];
+  }
+
+  /* Bouton Fantôme */
+  .btn-ghost {
+    @apply bg-transparent text-tf-text-muted font-sans text-btn font-semibold
+           px-4 py-2 rounded-md transition-colors duration-150
+           hover:text-tf-text hover:bg-tf-gray-soft;
+  }
+
+  /* Bouton Danger */
+  .btn-danger {
+    @apply bg-[#FFF0F0] text-tf-error border border-tf-error font-sans text-btn font-semibold
+           px-6 py-3 rounded-md transition-colors duration-150
+           hover:bg-[#FFDDDD];
+  }
+
+  /* Carte produit */
+  .product-card {
+    @apply bg-white border border-tf-border rounded-xl overflow-hidden
+           transition-all duration-150
+           hover:border-[rgba(201,168,76,0.4)] hover:shadow-card-hover hover:-translate-y-0.5;
+  }
+
+  /* Input */
+  .input-field {
+    @apply w-full bg-white border border-tf-border rounded-md px-4 py-3
+           font-sans text-body text-tf-text placeholder:text-tf-text-muted
+           transition-all duration-150
+           focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-[rgba(201,168,76,0.2)]
+           disabled:bg-tf-gray-soft disabled:text-tf-text-muted disabled:cursor-not-allowed;
+  }
+
+  /* Label de formulaire */
+  .input-label {
+    @apply block font-sans text-[13px] font-medium text-tf-text mb-1.5;
+  }
+
+  /* Badge promo */
+  .badge-promo {
+    @apply bg-tf-black text-tf-gold text-micro font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide;
+  }
+
+  /* Badge couturier fiable */
+  .badge-fiable {
+    @apply bg-tf-success-bg text-tf-success text-micro font-semibold px-2 py-0.5 rounded-sm;
+  }
+
+  /* Badge stock faible */
+  .badge-stock-faible {
+    @apply bg-tf-warning-bg text-tf-warning text-micro font-semibold px-2 py-0.5 rounded-sm;
+  }
+
+  /* Monogramme TF */
+  .monogram-tf {
+    @apply inline-flex items-center justify-center bg-tf-black text-tf-gold
+           font-brand font-normal rounded-2xl aspect-square select-none;
+  }
+
+  /* Prix */
+  .price {
+    @apply font-brand text-price text-tf-text;
+  }
+
+  .price-promo {
+    @apply font-brand text-price text-tf-gold;
+  }
+
+  .price-original {
+    @apply font-brand text-[14px] text-tf-text-muted line-through;
+  }
+}

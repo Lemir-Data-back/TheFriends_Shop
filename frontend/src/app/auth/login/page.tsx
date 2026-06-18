@@ -1,0 +1,114 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
+import { useAuthStore } from "@/store/auth";
+import { TokenResponse } from "@/types/auth";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const { setAuth } = useAuthStore();
+
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const { data } = await api.post<TokenResponse>("/auth/login", {
+        identifier,
+        password,
+      });
+      setAuth(data.user, data.access_token, data.refresh_token);
+      const redirects: Record<string, string> = {
+        client:    "/dashboard",
+        couturier: "/dashboard/couturier",
+        vendeur:   "/dashboard/vendeur",
+        admin:     "/admin",
+      };
+      router.push(redirects[data.user.role] ?? "/dashboard");
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
+        "Identifiants incorrects";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="w-full max-w-sm bg-white rounded-xl border border-tf-border p-8">
+      <h2 className="font-sans text-h3 font-semibold text-tf-text mb-6">Connexion</h2>
+
+      {error && (
+        <div className="mb-4 p-3 bg-tf-error-bg border border-tf-error rounded-md">
+          <p className="font-sans text-[13px] text-tf-error">{error}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+            Téléphone ou email
+          </label>
+          <input
+            type="text"
+            className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
+            placeholder="+225 07 00 00 00 00 ou email..."
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+            Mot de passe
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="w-full px-3 py-2.5 pr-10 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-tf-text-muted hover:text-tf-text transition-colors"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full mt-2 py-3 px-6 bg-tf-gold text-tf-black rounded-md font-sans font-bold text-btn hover:bg-tf-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Connexion..." : "Se connecter"}
+        </button>
+      </form>
+
+      <p className="mt-6 text-center font-sans text-[13px] text-tf-text-muted">
+        Pas encore de compte ?{" "}
+        <Link href="/auth/register" className="text-tf-gold-dark font-medium hover:underline">
+          Créer un compte
+        </Link>
+      </p>
+    </div>
+  );
+}

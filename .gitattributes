@@ -1,0 +1,25 @@
+# Normalise tous les fichiers texte en LF dans le repo
+* text=auto eol=lf
+
+# Force LF explicitement pour les fichiers de code
+*.py text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Fichiers Windows qui doivent rester en CRLF
+*.bat text eol=crlf
+
+# Fichiers binaires à ne jamais toucher
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary

@@ -1,0 +1,45 @@
+# Dépendances
+node_modules/
+frontend/node_modules/
+backend/venv/
+backend/__pycache__/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/.env.local
+
+# FastAPI / Python
+backend/.env
+backend/*.egg-info/
+backend/dist/
+backend/.pytest_cache/
+
+# Base de données
+*.sqlite
+*.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Credentials (NE JAMAIS COMMITER)
+*.pem
+*credentials*.json
+firebase-credentials.json
+google-credentials.json
+
+# PWA
+frontend/public/sw.js
+frontend/public/workbox-*.js
