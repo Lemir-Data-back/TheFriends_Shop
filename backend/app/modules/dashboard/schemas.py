@@ -1,6 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+
+
+class EvolutionMensuelle(BaseModel):
+    mois: str    # "2026-03"
+    label: str   # "Mar"
+    revenu: int
+    nb_commandes: int
 
 
 # ─── Dashboard Client ─────────────────────────────────────────────────────────
@@ -39,6 +45,7 @@ class VendeurDashboard(BaseModel):
     stats: VendeurStats
     commandes_recentes: list
     produits_populaires: list
+    evolution_mensuelle: list[EvolutionMensuelle] = []
     shop_id: Optional[int] = None
 
 
@@ -59,28 +66,5 @@ class CouturierDashboard(BaseModel):
     stats: CouturierStats
     demandes_recentes: list
     commandes_en_cours: list
-
-
-# ─── Avis ─────────────────────────────────────────────────────────────────────
-
-class ReviewCreate(BaseModel):
-    order_id: int
-    score_delais: float
-    score_qualite: float
-    score_communication: float
-    commentaire: Optional[str] = None
-
-
-class ReviewResponse(BaseModel):
-    id: int
-    order_id: int
-    reviewer_id: int
-    shop_id: int
-    score_delais: float
-    score_qualite: float
-    score_communication: float
-    score_moyen: float
-    commentaire: Optional[str] = None
-    created_at: datetime
-
-    model_config = {"from_attributes": True}
+    evolution_mensuelle: list[EvolutionMensuelle] = []
+    shop_id: Optional[int] = None

@@ -3,17 +3,19 @@ Panel d'administration — réservé au rôle ADMIN.
 Gestion des utilisateurs, boutiques, litiges et statistiques globales.
 """
 from datetime import datetime, timezone, timedelta
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
 from pydantic import BaseModel
 from sqlalchemy import func, desc
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, require_admin
-from app.models.order import Order, OrderStatut, EscrowStatut
-from app.models.product import Product
-from app.models.review import Review
-from app.models.shop import Shop
-from app.models.user import User, UserRole
+from app.modules.activity_log.service import get_client_ip, log_activity
+from app.modules.activity_log.models import ActivityLog
+from app.modules.commandes.models import Order, OrderStatut, EscrowStatut
+from app.modules.produits.models import Product
+from app.modules.avis.models import Review
+from app.modules.boutiques.models import Shop
+from app.modules.utilisateurs.models import User, UserRole
 
 router = APIRouter(prefix="/admin", tags=["Administration"])
 
@@ -64,10 +66,15 @@ class ShopAdminOut(BaseModel):
     score_moyen: float
     owner_name: str
     owner_phone: str | None
+    badges: dict | None
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class ShopBadgeUpdate(BaseModel):
+    certifie: bool
 
 
 class OrderAdminOut(BaseModel):
@@ -93,6 +100,28 @@ class UserUpdate(BaseModel):
 class DisputeResolve(BaseModel):
     verdict: str       # "rembourser_client" | "payer_vendeur" | "partager"
     note_admin: str | None = None
+
+
+class DailyPoint(BaseModel):
+    date: str
+    value: int
+
+
+class StatsSeries(BaseModel):
+    ca: list[DailyPoint]
+    nouveaux_users: list[DailyPoint]
+    commandes: list[DailyPoint]
+
+
+class LogOut(BaseModel):
+    id: int
+    action: str
+    ip_address: str | None
+    details: dict | None
+    created_at: datetime
+    user_id: int | None
+    user_name: str | None
+    user_role: str | None
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -190,10 +219,47 @@ def list_users(
     return result
 
 
+@router.get("/logs", response_model=list[LogOut])
+def get_logs(
+    action: str | None = Query(None),
+    user_id: int | None = Query(None),
+    period: str = Query("7d"),
+    limit: int = Query(50, le=500),
+    offset: int = Query(0),
+    db: Session = Depends(get_db),
+    _=Depends(require_admin),
+):
+    """Journal des événements de la plateforme avec filtres."""
+    n_days = {"7d": 7, "30d": 30, "90d": 90}.get(period, 7)
+    start = datetime.now(timezone.utc) - timedelta(days=n_days)
+
+    q = db.query(ActivityLog).filter(ActivityLog.created_at >= start)
+    if action:
+        q = q.filter(ActivityLog.action == action)
+    if user_id:
+        q = q.filter(ActivityLog.user_id == user_id)
+
+    logs = q.order_by(desc(ActivityLog.created_at)).offset(offset).limit(limit).all()
+    return [
+        LogOut(
+            id=l.id,
+            action=l.action,
+            ip_address=l.ip_address,
+            details=l.details,
+            created_at=l.created_at,
+            user_id=l.user_id,
+            user_name=l.user.full_name if l.user else None,
+            user_role=l.user.role.value if l.user else None,
+        )
+        for l in logs
+    ]
+
+
 @router.patch("/users/{user_id}", response_model=UserAdminOut)
 def update_user(
     user_id: int,
     payload: UserUpdate,
+    request: Request,
     db: Session = Depends(get_db),
     current_admin=Depends(require_admin),
 ):
@@ -204,16 +270,22 @@ def update_user(
     if user.id == current_admin.id:
         raise HTTPException(status_code=400, detail="Impossible de se modifier soi-même")
 
+    changes: dict = {}
     if payload.is_active is not None:
+        changes["is_active"] = payload.is_active
         user.is_active = payload.is_active
     if payload.role is not None:
         try:
             user.role = UserRole(payload.role)
+            changes["role"] = payload.role
         except ValueError:
             raise HTTPException(status_code=400, detail=f"Rôle invalide : {payload.role}")
     if payload.score_confiance is not None:
         user.score_confiance = max(0.0, min(5.0, payload.score_confiance))
+        changes["score_confiance"] = user.score_confiance
 
+    log_activity(db, "user_modifie", user_id=current_admin.id, ip=get_client_ip(request),
+                 details={"cible_id": user_id, "modifications": changes})
     db.commit()
     db.refresh(user)
     nb_cmd = db.query(func.count(Order.id)).filter(Order.client_id == user.id).scalar() or 0
@@ -251,6 +323,7 @@ def list_shops(
             nb_commandes=s.nb_commandes, nb_avis=s.nb_avis, score_moyen=round(score_moyen, 2),
             owner_name=s.owner.full_name if s.owner else "—",
             owner_phone=s.owner.phone if s.owner else None,
+            badges=s.badges,
             created_at=s.created_at,
         ))
     return result
@@ -259,8 +332,9 @@ def list_shops(
 @router.patch("/shops/{shop_id}/validate")
 def validate_shop(
     shop_id: int,
+    request: Request,
     db: Session = Depends(get_db),
-    _=Depends(require_admin),
+    current_admin=Depends(require_admin),
 ):
     """Valider une boutique — la rend visible sur la plateforme."""
     shop = db.query(Shop).filter(Shop.id == shop_id).first()
@@ -268,6 +342,8 @@ def validate_shop(
         raise HTTPException(status_code=404, detail="Boutique introuvable")
     shop.is_validated = True
     shop.is_active = True
+    log_activity(db, "boutique_validee", user_id=current_admin.id, ip=get_client_ip(request),
+                 details={"shop_id": shop_id, "nom": shop.nom})
     db.commit()
     return {"message": f"Boutique '{shop.nom}' validée avec succès"}
 
@@ -275,16 +351,42 @@ def validate_shop(
 @router.patch("/shops/{shop_id}/suspend")
 def suspend_shop(
     shop_id: int,
+    request: Request,
     db: Session = Depends(get_db),
-    _=Depends(require_admin),
+    current_admin=Depends(require_admin),
 ):
     """Suspendre une boutique — masquée de la plateforme."""
     shop = db.query(Shop).filter(Shop.id == shop_id).first()
     if not shop:
         raise HTTPException(status_code=404, detail="Boutique introuvable")
     shop.is_active = False
+    log_activity(db, "boutique_suspendue", user_id=current_admin.id, ip=get_client_ip(request),
+                 details={"shop_id": shop_id, "nom": shop.nom})
     db.commit()
     return {"message": f"Boutique '{shop.nom}' suspendue"}
+
+
+@router.patch("/shops/{shop_id}/badge-fiable")
+def update_shop_badge_fiable(
+    shop_id: int,
+    payload: ShopBadgeUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_admin=Depends(require_admin),
+):
+    """Certification manuelle du badge 'Couturier Fiable' — décision admin, pas de calcul auto."""
+    shop = db.query(Shop).filter(Shop.id == shop_id).first()
+    if not shop:
+        raise HTTPException(status_code=404, detail="Boutique introuvable")
+    shop.badges = {**(shop.badges or {}), "couturier_fiable": payload.certifie}
+    log_activity(
+        db, "boutique_badge_fiable_certifie" if payload.certifie else "boutique_badge_fiable_revoque",
+        user_id=current_admin.id, ip=get_client_ip(request),
+        details={"shop_id": shop_id, "nom": shop.nom},
+    )
+    db.commit()
+    action = "certifiée fiable" if payload.certifie else "n'est plus certifiée fiable"
+    return {"message": f"Boutique '{shop.nom}' {action}"}
 
 
 @router.get("/disputes", response_model=list[OrderAdminOut])
@@ -316,8 +418,9 @@ def list_disputes(
 def resolve_dispute(
     order_id: int,
     payload: DisputeResolve,
+    request: Request,
     db: Session = Depends(get_db),
-    _=Depends(require_admin),
+    current_admin=Depends(require_admin),
 ):
     """
     Arbitrage d'un litige.
@@ -345,8 +448,54 @@ def resolve_dispute(
     if payload.note_admin:
         order.note_vendeur = f"[ADMIN] {payload.note_admin}"
 
+    log_activity(db, "litige_resolu", user_id=current_admin.id, ip=get_client_ip(request),
+                 details={"order_id": order_id, "verdict": payload.verdict})
     db.commit()
     return {"message": "Litige résolu", "verdict": payload.verdict}
+
+
+@router.get("/stats/series", response_model=StatsSeries)
+def get_stats_series(
+    period: str = Query("30d"),
+    db: Session = Depends(get_db),
+    _=Depends(require_admin),
+):
+    """Séries temporelles pour les graphes du dashboard admin."""
+    n_days = {"7d": 7, "30d": 30, "90d": 90}.get(period, 30)
+    now = datetime.now(timezone.utc)
+    start = now - timedelta(days=n_days)
+
+    dates = [(now - timedelta(days=i)).date() for i in range(n_days - 1, -1, -1)]
+
+    users_raw = (
+        db.query(func.date(User.created_at).label("day"), func.count(User.id).label("cnt"))
+        .filter(User.created_at >= start)
+        .group_by(func.date(User.created_at))
+        .all()
+    )
+    users_by_day: dict[str, int] = {str(r.day): r.cnt for r in users_raw}
+
+    ca_raw = (
+        db.query(func.date(Order.updated_at).label("day"), func.sum(Order.montant).label("total"))
+        .filter(Order.statut == OrderStatut.CONFIRME, Order.updated_at >= start)
+        .group_by(func.date(Order.updated_at))
+        .all()
+    )
+    ca_by_day: dict[str, int] = {str(r.day): int(r.total or 0) for r in ca_raw}
+
+    cmd_raw = (
+        db.query(func.date(Order.created_at).label("day"), func.count(Order.id).label("cnt"))
+        .filter(Order.created_at >= start)
+        .group_by(func.date(Order.created_at))
+        .all()
+    )
+    cmd_by_day: dict[str, int] = {str(r.day): r.cnt for r in cmd_raw}
+
+    return StatsSeries(
+        ca=[DailyPoint(date=str(d), value=ca_by_day.get(str(d), 0)) for d in dates],
+        nouveaux_users=[DailyPoint(date=str(d), value=users_by_day.get(str(d), 0)) for d in dates],
+        commandes=[DailyPoint(date=str(d), value=cmd_by_day.get(str(d), 0)) for d in dates],
+    )
 
 
 @router.get("/orders", response_model=list[OrderAdminOut])

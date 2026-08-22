@@ -7,7 +7,7 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 from app.db.base import SessionLocal
-from app.models.user import User, UserRole
+from app.modules.utilisateurs.models import User, UserRole
 from app.core.security import hash_password
 
 PHONE    = "07000003"

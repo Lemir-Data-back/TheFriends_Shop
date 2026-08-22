@@ -6,14 +6,14 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: thefriendsshop_db
-      POSTGRES_USER: postgres
+      POSTGRES_USER: thefriends
       POSTGRES_PASSWORD: Amir2468
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d thefriendsshop_db"]
+      test: ["CMD-SHELL", "pg_isready -U thefriends -d thefriendsshop_db"]
       interval: 10s
       timeout: 5s
       retries: 5

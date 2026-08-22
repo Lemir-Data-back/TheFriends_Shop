@@ -5,19 +5,19 @@ from datetime import datetime, timezone, timedelta
 
 from app.db.base import get_db
 from app.api.deps import get_current_active_user
-from app.models.user import User, UserRole
-from app.models.order import Order, OrderStatut, CreationRequest, CreationRequestStatut
-from app.models.product import Product
-from app.models.shop import Shop
-from app.models.outfit import Outfit
-from app.models.analytics import EventAnalytics
-from app.schemas.dashboard import (
+from app.modules.utilisateurs.models import User, UserRole
+from app.modules.commandes.models import Order, OrderStatut, CreationRequest, CreationRequestStatut
+from app.modules.produits.models import Product
+from app.modules.boutiques.models import Shop
+from app.modules.outfits.models import Outfit
+from app.modules.analytics.models import EventAnalytics
+from app.modules.dashboard.schemas import (
     ClientDashboard, ClientStats,
     VendeurDashboard, VendeurStats,
     CouturierDashboard, CouturierStats,
+    EvolutionMensuelle,
 )
-from app.schemas.order import OrderResponse
-from app.schemas.user import ProfileUpdate, UserResponse
+from app.modules.commandes.schemas import OrderResponse
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -51,6 +51,24 @@ def _parse_date_range(
         fin = now
 
     return debut, fin
+
+
+MOIS_LABELS_FR = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"]
+
+
+def _evolution_mensuelle(
+    toutes_commandes: list[Order],
+    commandes_revenu: list[Order],
+) -> list[EvolutionMensuelle]:
+    """Regroupe commandes/revenu par mois, de janvier à décembre de l'année en cours."""
+    y = datetime.now(timezone.utc).year
+
+    result = []
+    for m in range(1, 13):
+        revenu = sum(o.montant for o in commandes_revenu if o.created_at.year == y and o.created_at.month == m)
+        nb = sum(1 for o in toutes_commandes if o.created_at.year == y and o.created_at.month == m)
+        result.append(EvolutionMensuelle(mois=f"{y}-{m:02d}", label=MOIS_LABELS_FR[m - 1], revenu=revenu, nb_commandes=nb))
+    return result
 
 
 # ── Dashboard Client ──────────────────────────────────────────────────────────
@@ -187,6 +205,7 @@ def dashboard_vendeur(
             {"id": p.id, "titre": p.titre, "nb_commandes": p.nb_commandes, "prix": p.prix}
             for p in produits_pop
         ],
+        evolution_mensuelle=_evolution_mensuelle(commandes, confirmees),
         shop_id=shop.id,
     )
 
@@ -264,6 +283,8 @@ def dashboard_couturier(
             for d in demandes_ouvertes[:5]
         ],
         commandes_en_cours=[OrderResponse.model_validate(o) for o in en_cours_periode],
+        evolution_mensuelle=_evolution_mensuelle(commandes, terminees),
+        shop_id=shop.id,
     )
 
 
@@ -336,44 +357,3 @@ def get_alertes(
         })
 
     return {"alertes": alertes, "nb_total": len(alertes)}
-
-
-# ── Profil utilisateur ────────────────────────────────────────────────────────
-
-@router.get("/profil", response_model=UserResponse)
-def get_profil(current_user: User = Depends(get_current_active_user)):
-    return UserResponse.model_validate(current_user)
-
-
-@router.patch("/profil", response_model=UserResponse)
-def update_profil(
-    payload: ProfileUpdate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    if payload.full_name:
-        current_user.full_name = payload.full_name
-    if payload.phone and payload.phone != current_user.phone:
-        conflict = db.query(User).filter(
-            User.phone == payload.phone,
-            User.id != current_user.id,
-        ).first()
-        if conflict:
-            raise HTTPException(status_code=400, detail="Ce numéro est déjà utilisé par un autre compte")
-        current_user.phone = payload.phone
-    if payload.morphologie:
-        current_user.morphologie = payload.morphologie
-    if payload.tranche_age:
-        current_user.tranche_age = payload.tranche_age
-    if payload.mensurations:
-        existing = current_user.mensurations or {}
-        existing.update(payload.mensurations.model_dump(exclude_none=True))
-        current_user.mensurations = existing
-    if payload.mobile_money:
-        existing_mm = current_user.mobile_money or {}
-        existing_mm.update(payload.mobile_money.model_dump(exclude_none=True))
-        current_user.mobile_money = existing_mm
-
-    db.commit()
-    db.refresh(current_user)
-    return UserResponse.model_validate(current_user)

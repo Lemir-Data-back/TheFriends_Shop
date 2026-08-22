@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-18T00:00:00.000Z",
+  "title": "Design System: TheFriends Shopping",
+  "extensions": {
+    "colorMeta": {
+      "or-principal": { "role": "primary", "displayName": "Or Principal", "canonical": "oklch(75% 0.11 75)", "tonalRamp": ["oklch(20% 0.03 75)", "oklch(32% 0.06 75)", "oklch(45% 0.09 75)", "oklch(58% 0.11 75)", "oklch(68% 0.12 75)", "oklch(75% 0.11 75)", "oklch(85% 0.08 75)", "oklch(94% 0.04 75)"] },
+      "noir-nuit": { "role": "secondary", "displayName": "Noir Nuit", "canonical": "oklch(10% 0 0)", "tonalRamp": ["oklch(8% 0 0)", "oklch(12% 0 0)", "oklch(18% 0 0)", "oklch(28% 0 0)", "oklch(42% 0 0)", "oklch(58% 0 0)", "oklch(75% 0 0)", "oklch(92% 0 0)"] },
+      "charbon": { "role": "secondary", "displayName": "Charbon", "canonical": "oklch(13% 0 0)" },
+      "or-clair": { "role": "tertiary", "displayName": "Or Clair", "canonical": "oklch(85% 0.08 80)" },
+      "or-fonce": { "role": "tertiary", "displayName": "Or Foncé", "canonical": "oklch(58% 0.1 70)" },
+      "blanc-chaud": { "role": "neutral", "displayName": "Blanc Chaud", "canonical": "oklch(98.5% 0.004 75)", "tonalRamp": ["oklch(98.5% 0.004 75)", "oklch(96% 0.005 75)", "oklch(92% 0.006 75)", "oklch(86% 0.007 75)"] },
+      "blanc-pur": { "role": "neutral", "displayName": "Blanc Pur", "canonical": "oklch(100% 0 0)" },
+      "gris-doux": { "role": "neutral", "displayName": "Gris Doux", "canonical": "oklch(95.5% 0.004 75)" },
+      "beige-bordure": { "role": "neutral", "displayName": "Beige Bordure", "canonical": "oklch(90% 0.01 75)" },
+      "texte-discret": { "role": "neutral", "displayName": "Texte Discret", "canonical": "oklch(53% 0.006 75)" },
+      "vert-succes": { "role": "success", "displayName": "Vert Succès", "canonical": "oklch(45% 0.08 155)" },
+      "rouge-erreur": { "role": "error", "displayName": "Rouge Erreur", "canonical": "oklch(48% 0.16 25)" },
+      "or-avertissement": { "role": "warning", "displayName": "Or Avertissement", "canonical": "oklch(58% 0.1 70)" },
+      "bleu-info": { "role": "info", "displayName": "Bleu Info", "canonical": "oklch(45% 0.12 250)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Bannière hero, grands titres landing — Georgia uniquement." },
+      "h1": { "displayName": "Titre Principal", "purpose": "Titre de page, nom de produit principal." },
+      "price": { "displayName": "Prix", "purpose": "Affichage des prix en FCFA — toujours Georgia pour valoriser." },
+      "button": { "displayName": "Bouton", "purpose": "Texte de CTA et boutons d'action — jamais de serif." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 4px 16px rgba(0,0,0,0.08)", "purpose": "Ombre discrète au hover des cartes produit." },
+      { "name": "card-hover", "value": "0 8px 24px rgba(0,0,0,0.12)", "purpose": "Intensification au hover prolongé ou élévation active." },
+      { "name": "gold", "value": "0 0 0 3px rgba(201, 168, 76, 0.2)", "purpose": "Anneau de focus doré sur inputs et éléments actifs." }
+    ],
+    "motion": [
+      { "name": "duration-default", "value": "150ms", "purpose": "Durée par défaut des transitions de couleur/état." },
+      { "name": "fade-in", "value": "fade-in 0.35s ease both", "purpose": "Apparition douce avec léger déplacement vertical (12px)." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "375px" },
+      { "name": "sm", "value": "390px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Bouton Principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "CTA de navigation, connexion, confirmation. Fond noir, texte blanc.",
+      "html": "<button class=\"ds-btn-primary\">Confirmer</button>",
+      "css": ".ds-btn-primary { background: #111111; color: #FFFFFF; font-family: Inter, Helvetica Neue, Arial, sans-serif; font-size: 13px; font-weight: 700; padding: 12px 24px; border: none; border-radius: 10px; transition: background-color 150ms, transform 150ms; cursor: pointer; } .ds-btn-primary:hover { background: #1C1C1C; } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: 2px solid #C9A84C; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Bouton Or / Conversion",
+      "kind": "button",
+      "refersTo": "button-gold",
+      "description": "Action monétaire : payer, acheter. Fond or, texte noir — jamais blanc.",
+      "html": "<button class=\"ds-btn-gold\">Payer maintenant</button>",
+      "css": ".ds-btn-gold { background: #C9A84C; color: #111111; font-family: Inter, Helvetica Neue, Arial, sans-serif; font-size: 13px; font-weight: 700; padding: 12px 24px; border: none; border-radius: 10px; transition: background-color 150ms, transform 150ms; cursor: pointer; } .ds-btn-gold:hover { background: #F0D080; } .ds-btn-gold:active { transform: scale(0.98); } .ds-btn-gold:focus-visible { outline: 2px solid #111111; outline-offset: 2px; }"
+    },
+    {
+      "name": "Bouton Contour",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Actions secondaires : retour, annuler.",
+      "html": "<button class=\"ds-btn-outline\">Annuler</button>",
+      "css": ".ds-btn-outline { background: #FFFFFF; color: #111111; font-family: Inter, Helvetica Neue, Arial, sans-serif; font-size: 13px; font-weight: 600; padding: 12px 24px; border: 1px solid #E8E4DC; border-radius: 10px; transition: border-color 150ms, transform 150ms; cursor: pointer; } .ds-btn-outline:hover { border-color: #111111; } .ds-btn-outline:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Carte Produit",
+      "kind": "card",
+      "refersTo": "product-card",
+      "description": "Carte catalogue : image 3:4, badges superposés, titre, prix en Georgia.",
+      "html": "<article class=\"ds-product-card\"><div class=\"ds-product-card__image\"><span class=\"ds-product-card__badge\">-20%</span></div><div class=\"ds-product-card__body\"><p class=\"ds-product-card__shop\">Atelier Aya</p><h3 class=\"ds-product-card__title\">Robe wax cérémonie manches longues</h3><p class=\"ds-product-card__price\">35 000 FCFA</p></div></article>",
+      "css": ".ds-product-card { background: #FFFFFF; border: 1px solid #E8E4DC; border-radius: 16px; overflow: hidden; transition: border-color 150ms, box-shadow 150ms, transform 150ms; max-width: 240px; font-family: Inter, Helvetica Neue, Arial, sans-serif; } .ds-product-card:hover { border-color: rgba(201,168,76,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.12); transform: translateY(-2px); } .ds-product-card__image { position: relative; aspect-ratio: 3/4; background: #F5F4F1; } .ds-product-card__badge { position: absolute; top: 8px; left: 8px; background: #111111; color: #C9A84C; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 6px; } .ds-product-card__body { padding: 12px; } .ds-product-card__shop { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #7A766F; margin: 0 0 4px; } .ds-product-card__title { font-size: 13px; font-weight: 500; color: #111111; margin: 0 0 8px; line-height: 1.4; } .ds-product-card__price { font-family: Georgia, 'Times New Roman', serif; font-size: 16px; font-weight: 500; color: #111111; margin: 0; }"
+    },
+    {
+      "name": "Champ de formulaire",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Input texte avec focus or et label associé.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field__label\" for=\"ds-email\">Email</label><input class=\"ds-field__input\" id=\"ds-email\" type=\"email\" placeholder=\"vous@exemple.ci\" /></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: Inter, Helvetica Neue, Arial, sans-serif; } .ds-field__label { font-size: 13px; font-weight: 500; color: #111111; } .ds-field__input { background: #FFFFFF; border: 1px solid #E8E4DC; border-radius: 10px; padding: 12px 16px; font-size: 15px; color: #111111; transition: border-color 150ms, box-shadow 150ms; } .ds-field__input::placeholder { color: #7A766F; } .ds-field__input:focus { outline: none; border-color: #C9A84C; box-shadow: 0 0 0 3px rgba(201,168,76,0.2); } .ds-field__input:disabled { background: #F5F4F1; color: #7A766F; cursor: not-allowed; }"
+    },
+    {
+      "name": "Badge / Chip",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Étiquette compacte uppercase trackée, variantes promo / fiable / stock-faible / rupture.",
+      "html": "<span class=\"ds-badge ds-badge--fiable\">Couturier Fiable</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-family: Inter, Helvetica Neue, Arial, sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; } .ds-badge--promo { background: #111111; color: #C9A84C; } .ds-badge--fiable { background: #D8F3DC; color: #2D6A4F; } .ds-badge--stock-faible { background: #FFF3CD; color: #B8892A; } .ds-badge--rupture { background: #FFCCCC; color: #C0392B; }"
+    },
+    {
+      "name": "Navigation principale",
+      "kind": "nav",
+      "refersTo": "navbar",
+      "description": "Barre fixe noire translucide, logo Georgia/Inter empilé, CTA or unique.",
+      "html": "<nav class=\"ds-navbar\"><div class=\"ds-navbar__logo\"><p class=\"ds-navbar__brand\">TheFriends</p><p class=\"ds-navbar__sub\">Shopping</p></div><a class=\"ds-navbar__cta\" href=\"#\">Se connecter</a></nav>",
+      "css": ".ds-navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: rgba(17,17,17,0.8); backdrop-filter: blur(6px); font-family: Inter, Helvetica Neue, Arial, sans-serif; } .ds-navbar__brand { font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; color: #C9A84C; margin: 0; line-height: 1; } .ds-navbar__sub { font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(201,168,76,0.6); margin: 2px 0 0; } .ds-navbar__cta { padding: 8px 16px; background: #C9A84C; color: #111111; border-radius: 10px; font-weight: 700; font-size: 13px; text-decoration: none; transition: background-color 150ms; } .ds-navbar__cta:hover { background: #F0D080; }"
+    },
+    {
+      "name": "Monogramme TF",
+      "kind": "custom",
+      "refersTo": "monogram-tf",
+      "description": "Signature de l'écosystème TheFriends Companies — favicon, app icon, badge inline.",
+      "html": "<div class=\"ds-monogram\">TF</div>",
+      "css": ".ds-monogram { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #111111; color: #C9A84C; font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 20px; border-radius: 22px; user-select: none; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "L'Atelier Doré",
+    "overview": "TheFriends Shopping habite la rencontre entre l'atelier de couture ivoirien et la retenue du luxe éditorial. Le blanc domine comme la lumière d'un atelier propre et généreux ; le noir structure comme l'ossature d'un comptoir bien tenu ; l'or n'apparaît qu'aux moments qui comptent — un prix, un bouton d'achat, un badge de confiance — jamais en fond, jamais en remplissage. La serif (Georgia) porte la voix de la marque et de la valeur marchande ; le sans-serif (Inter) porte l'action et la fonction. Cette double écriture n'est pas un choix esthétique gratuit : elle distingue physiquement ce qui se contemple (le produit, le prix, le nom de la maison) de ce qu'on actionne (naviguer, payer, filtrer). Le système rejette explicitement le gabarit \"marketplace générique\" de Jumia ou CoinAfrique : pas de bannières promo saturées de couleurs concurrentes, pas de grilles identiques criant toutes en même temps, pas de hiérarchie plate où rien ne se distingue. Ici, la rareté de l'or est la preuve de sa valeur — s'il est partout, il ne vaut plus rien.",
+    "keyCharacteristics": [
+      "Blanc chaud dominant (~70% des surfaces), jamais un blanc froid clinique",
+      "Or réservé aux signaux de valeur réelle : prix, CTA de conversion, badges de confiance, états actifs",
+      "Noir structurant pour l'architecture de page — jamais décoratif",
+      "Deux écritures typographiques avec des rôles stricts et non interchangeables",
+      "Surfaces plates au repos ; la profondeur n'apparaît qu'en réponse à l'interaction"
+    ],
+    "rules": [
+      { "name": "La Règle de la Rareté de l'Or", "body": "L'or #C9A84C ne décore jamais une surface ; il signale toujours une valeur réelle. S'il apparaît sur plus de 10% d'un écran donné, c'est qu'il a été mal utilisé.", "section": "colors" },
+      { "name": "La Règle du Texte Interdit", "body": "Jamais de texte blanc sur fond or — le contraste y est insuffisant et la règle est absolue. Sur fond or, le texte est toujours #111111.", "section": "colors" },
+      { "name": "La Règle des Deux Voix", "body": "Georgia parle pour la marque et la valeur marchande ; Inter parle pour l'action et la fonction. Les deux ne se mélangent jamais dans une même ligne de navigation.", "section": "typography" },
+      { "name": "La Règle du Regular Seul", "body": "Georgia n'est jamais en gras, jamais en italique — la graisse 400 uniquement. En dessous de 14px (web), la serif perd sa lisibilité.", "section": "typography" },
+      { "name": "La Règle du Plat-par-Défaut", "body": "Toute surface est plate au repos. L'ombre n'apparaît qu'en réponse à un état (hover, focus, élévation active) — jamais en décor permanent.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do utiliser Georgia exclusivement pour le nom de marque, le slogan, les titres produits, les noms de boutiques et les prix.",
+      "Do réserver l'or #C9A84C aux signaux de valeur réelle : prix, CTA de conversion, badges mérités, états actifs.",
+      "Do garder le texte sur fond or toujours en #111111 — jamais blanc.",
+      "Do utiliser un ratio image 3:4 (portrait) pour tous les vêtements en carte produit.",
+      "Do laisser les surfaces plates au repos ; n'introduire l'ombre qu'en réponse à une interaction.",
+      "Do respecter un contraste texte/fond minimum de 4.5:1, et la même exigence pour les placeholders."
+    ],
+    "donts": [
+      "Don't utiliser l'or en fond pleine page — c'est une décoration, jamais un aplat.",
+      "Don't mélanger Georgia et Inter dans une même ligne de navigation.",
+      "Don't mettre Georgia en gras ou en italique — 400 Regular uniquement.",
+      "Don't descendre sous 14px pour la serif (web) ni sous 10px pour l'interface.",
+      "Don't utiliser un fond rouge pour un badge promo — le badge promo reste noir/or.",
+      "Don't reproduire le gabarit \"marketplace générique\" de Jumia ou CoinAfrique.",
+      "Don't ajouter d'ombre colorée — la teinte des ombres reste neutre, jamais teintée d'or."
+    ]
+  }
+}

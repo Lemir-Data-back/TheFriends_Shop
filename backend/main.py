@@ -29,3 +29,9 @@ app.include_router(api_router)
 @app.get("/health")
 def health_check():
     return {"status": "ok", "app": settings.APP_NAME, "env": settings.APP_ENV}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("main:app", host="0.0.0.0", port=settings.APP_PORT, reload=True)

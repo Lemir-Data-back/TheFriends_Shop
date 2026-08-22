@@ -4,10 +4,11 @@ from datetime import datetime, timezone
 
 from app.db.base import get_db
 from app.api.deps import get_current_active_user
-from app.models.user import User, UserRole
-from app.models.message import Conversation, Message
-from app.models.shop import Shop
-from app.schemas.message import (
+from app.modules.utilisateurs.models import User, UserRole
+from app.modules.messages.models import Conversation, Message
+from app.modules.boutiques.models import Shop
+from app.modules.commandes.models import Order
+from app.modules.messages.schemas import (
     MessageCreate,
     MessageResponse,
     ConversationCreate,
@@ -74,16 +75,30 @@ def create_conversation(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    if current_user.role != UserRole.CLIENT:
-        raise HTTPException(status_code=403, detail="Seuls les clients peuvent initier une conversation")
-
     shop = db.query(Shop).filter(Shop.id == payload.shop_id).first()
     if not shop:
         raise HTTPException(status_code=404, detail="Boutique introuvable")
 
+    if current_user.role == UserRole.CLIENT:
+        client_id = current_user.id
+    elif current_user.role in (UserRole.VENDEUR, UserRole.COUTURIER):
+        if not current_user.shop or shop.id != current_user.shop.id:
+            raise HTTPException(status_code=403, detail="Accès refusé")
+        if payload.order_id:
+            order = db.query(Order).filter(Order.id == payload.order_id, Order.shop_id == shop.id).first()
+            if not order:
+                raise HTTPException(status_code=404, detail="Commande introuvable")
+            client_id = order.client_id
+        elif payload.client_id:
+            client_id = payload.client_id
+        else:
+            raise HTTPException(status_code=400, detail="client_id ou order_id requis pour initier une conversation")
+    else:
+        raise HTTPException(status_code=403, detail="Accès refusé")
+
     # Vérifier si conversation existante pour cette commande
     existing = db.query(Conversation).filter(
-        Conversation.client_id == current_user.id,
+        Conversation.client_id == client_id,
         Conversation.shop_id == payload.shop_id,
         Conversation.order_id == payload.order_id,
     ).first()
@@ -94,13 +109,15 @@ def create_conversation(
         db.refresh(existing)
         return _build_detail(existing, shop, db)
 
+    is_client_sender = current_user.role == UserRole.CLIENT
     conv = Conversation(
-        client_id=current_user.id,
+        client_id=client_id,
         shop_id=payload.shop_id,
         order_id=payload.order_id,
         dernier_message=payload.premier_message[:100],
         dernier_message_at=datetime.now(timezone.utc),
-        nb_non_lus_shop=1,
+        nb_non_lus_shop=1 if is_client_sender else 0,
+        nb_non_lus_client=0 if is_client_sender else 1,
     )
     db.add(conv)
     db.flush()

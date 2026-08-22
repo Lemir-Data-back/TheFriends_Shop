@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "reason": "Police imposée par la charte graphique officielle du client (Inter/Arial pour toute l'interface, Georgia réservé à la marque) — documentée dans DESIGN.md",
+        "createdAt": "2026-06-27T21:35:19.059Z"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#e5e7eb",
+        "reason": "Recharts contentStyle requires literal hex — CSS variables unavailable in third-party JS object props; semantically equivalent to tf-border",
+        "createdAt": "2026-07-08T11:06:48.649Z"
+      }
+    ]
+  }
+}

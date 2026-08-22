@@ -5,7 +5,7 @@ from typing import Optional
 
 from app.db.base import get_db
 from app.core.security import decode_token
-from app.models.user import User, UserRole
+from app.modules.utilisateurs.models import User, UserRole
 
 bearer_scheme = HTTPBearer()
 bearer_scheme_optional = HTTPBearer(auto_error=False)

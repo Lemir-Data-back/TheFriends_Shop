@@ -23,6 +23,7 @@ class MessageResponse(BaseModel):
 class ConversationCreate(BaseModel):
     shop_id: int
     order_id: Optional[int] = None
+    client_id: Optional[int] = None  # Requis si initié par le vendeur/couturier sans order_id
     premier_message: str = Field(..., min_length=1, max_length=2000)
 
 
