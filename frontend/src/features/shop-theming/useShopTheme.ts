@@ -18,6 +18,11 @@ export interface ShopTheme {
   slogan: string | null
   message_accueil: string | null
   a_propos: string | null
+  telephone_contact: string | null
+  whatsapp: string | null
+  instagram: string | null
+  tiktok: string | null
+  horaires: string | null
   layout_config: {
     hero_style: "full" | "split" | "minimal"
     grid_style: "2col" | "3col" | "masonry"
@@ -46,6 +51,11 @@ export const DEFAULT_THEME: ShopTheme = {
   slogan: null,
   message_accueil: null,
   a_propos: null,
+  telephone_contact: null,
+  whatsapp: null,
+  instagram: null,
+  tiktok: null,
+  horaires: null,
   layout_config: {
     hero_style: "full",
     grid_style: "2col",

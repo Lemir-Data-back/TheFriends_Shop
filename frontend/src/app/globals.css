@@ -53,6 +53,19 @@
       color: #111111;
     }
   }
+
+  /* Anneau de focus or par défaut pour tout élément interactif qui ne
+     définit pas son propre focus-visible (.btn-*, etc. le surchargent
+     via @layer components, qui passe toujours après ce layer base). */
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #C9A84C;
+    outline-offset: 2px;
+  }
 }
 
 /* ─── Animation barre oblique dorée hero ───────────────────────────── */
@@ -85,35 +98,40 @@
   .btn-primary {
     @apply bg-tf-black text-white font-sans text-btn font-bold px-6 py-3 rounded-md
            transition-colors duration-150 hover:bg-tf-charbon active:scale-[0.98]
-           disabled:opacity-50 disabled:cursor-not-allowed;
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2;
   }
 
   /* Bouton Or / Conversion (acheter, payer) */
   .btn-gold {
     @apply bg-tf-gold text-tf-black font-sans text-btn font-bold px-6 py-3 rounded-md
            transition-colors duration-150 hover:bg-tf-gold-light active:scale-[0.98]
-           disabled:opacity-50 disabled:cursor-not-allowed;
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-black focus-visible:ring-offset-2;
   }
 
   /* Bouton Contour */
   .btn-outline {
     @apply bg-white text-tf-black border border-tf-border font-sans text-btn font-semibold
            px-6 py-3 rounded-md transition-colors duration-150
-           hover:border-tf-text active:scale-[0.98];
+           hover:border-tf-text active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2;
   }
 
   /* Bouton Fantôme */
   .btn-ghost {
     @apply bg-transparent text-tf-text-muted font-sans text-btn font-semibold
            px-4 py-2 rounded-md transition-colors duration-150
-           hover:text-tf-text hover:bg-tf-gray-soft;
+           hover:text-tf-text hover:bg-tf-gray-soft
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2;
   }
 
   /* Bouton Danger */
   .btn-danger {
     @apply bg-[#FFF0F0] text-tf-error border border-tf-error font-sans text-btn font-semibold
            px-6 py-3 rounded-md transition-colors duration-150
-           hover:bg-[#FFDDDD];
+           hover:bg-[#FFDDDD]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-error focus-visible:ring-offset-2;
   }
 
   /* Carte produit */
@@ -158,16 +176,16 @@
            font-brand font-normal rounded-2xl aspect-square select-none;
   }
 
-  /* Prix */
+  /* Prix — IBM Plex Mono pour aligner proprement les chiffres */
   .price {
-    @apply font-brand text-price text-tf-text;
+    @apply font-mono text-price text-tf-text;
   }
 
   .price-promo {
-    @apply font-brand text-price text-tf-gold;
+    @apply font-mono text-price text-tf-gold;
   }
 
   .price-original {
-    @apply font-brand text-[14px] text-tf-text-muted line-through;
+    @apply font-mono text-[14px] text-tf-text-muted line-through;
   }
 }

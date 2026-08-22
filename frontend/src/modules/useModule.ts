@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import api from "@/lib/api"
+import { api } from "@/lib/api"
 import { MODULES } from "./registry"
 
 export interface ModuleStatus {
@@ -43,12 +43,12 @@ export function useModule(slug: string, shopId?: number) {
     }
   }
 
-  const module = modules?.find((m) => m.slug === slug)
+  const found = modules?.find((m) => m.slug === slug)
   const moduleDef = MODULES[slug]
 
   return {
-    isActive: module?.is_active ?? moduleDef?.defaultActive ?? false,
-    config: module?.config ?? {},
+    isActive: found?.is_active ?? moduleDef?.defaultActive ?? false,
+    config: found?.config ?? {},
     isLoading,
   }
 }

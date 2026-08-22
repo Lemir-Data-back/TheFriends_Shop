@@ -57,6 +57,8 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
       {/* Bouton principal */}
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-label="Sélectionner une période"
         className="flex items-center gap-2 px-3 py-2 bg-white border border-tf-border rounded-lg font-sans text-[12px] font-semibold text-tf-text hover:border-tf-gold transition-colors"
       >
         <CalendarDays size={14} className="text-tf-gold" />
@@ -89,8 +91,9 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="font-sans text-[10px] font-semibold text-tf-text-muted block mb-1">Début</label>
+                  <label htmlFor="date-range-debut" className="font-sans text-[10px] font-semibold text-tf-text-muted block mb-1">Début</label>
                   <input
+                    id="date-range-debut"
                     type="date"
                     value={local.debut}
                     max={local.fin || todayStr()}
@@ -99,8 +102,9 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
                   />
                 </div>
                 <div>
-                  <label className="font-sans text-[10px] font-semibold text-tf-text-muted block mb-1">Fin</label>
+                  <label htmlFor="date-range-fin" className="font-sans text-[10px] font-semibold text-tf-text-muted block mb-1">Fin</label>
                   <input
+                    id="date-range-fin"
                     type="date"
                     value={local.fin}
                     min={local.debut}
@@ -114,7 +118,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
               <button
                 onClick={apply}
                 disabled={!local.debut || !local.fin || local.debut > local.fin}
-                className="w-full py-2 bg-tf-black text-white rounded-lg font-sans font-bold text-[12px] hover:bg-tf-charbon transition-colors disabled:opacity-40"
+                className="btn-primary w-full py-2 rounded-lg text-[12px]"
               >
                 Appliquer
               </button>

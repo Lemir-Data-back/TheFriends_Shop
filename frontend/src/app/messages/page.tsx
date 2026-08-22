@@ -34,7 +34,7 @@ export default function MessagesPage() {
       <div className="min-h-screen bg-tf-bg flex flex-col items-center justify-center text-center px-4">
         <MessageCircle size={48} className="text-tf-border mb-4" />
         <p className="font-sans text-[16px] font-semibold text-tf-text mb-2">Connecte-toi pour accéder à tes messages</p>
-        <Link href="/auth/login" className="mt-4 px-6 py-3 bg-tf-gold text-tf-black rounded-md font-bold text-[14px] hover:bg-tf-gold-light transition-colors">
+        <Link href="/auth/login" className="btn-gold mt-4">
           Se connecter
         </Link>
       </div>

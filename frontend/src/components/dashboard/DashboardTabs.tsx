@@ -15,12 +15,14 @@ interface DashboardTabsProps {
 
 export function DashboardTabs({ tabs, active, onChange }: DashboardTabsProps) {
   return (
-    <div className="flex gap-1 border-b border-tf-border mb-8 overflow-x-auto">
+    <div role="tablist" className="flex gap-1 border-b border-tf-border mb-8 overflow-x-auto">
       {tabs.map((tab) => (
         <button
           key={tab.id}
+          role="tab"
+          aria-selected={active === tab.id}
           onClick={() => onChange(tab.id)}
-          className={`flex items-center gap-2 px-4 py-3 font-sans text-[13px] font-semibold whitespace-nowrap border-b-2 transition-colors ${
+          className={`flex items-center gap-2 px-4 py-3 font-sans text-[13px] font-semibold whitespace-nowrap border-b-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2 ${
             active === tab.id
               ? "border-tf-black text-tf-black"
               : "border-transparent text-tf-text-muted hover:text-tf-text"

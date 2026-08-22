@@ -1,16 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, getApiErrorMessage } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { TokenResponse } from "@/types/auth";
 
+const DASHBOARD_LINKS: Record<string, string> = {
+  client:    "/profil",
+  couturier: "/dashboard/couturier",
+  vendeur:   "/dashboard/vendeur",
+  admin:     "/admin",
+};
+
 export default function LoginPage() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
+  const { setAuth, isAuthenticated, _hasHydrated, user } = useAuthStore();
+
+  // Redirige si déjà connecté après réhydratation Zustand
+  useEffect(() => {
+    if (_hasHydrated && isAuthenticated && user) {
+      router.replace(DASHBOARD_LINKS[user.role] ?? "/profil");
+    }
+  }, [_hasHydrated, isAuthenticated, user, router]);
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -30,17 +44,14 @@ export default function LoginPage() {
       });
       setAuth(data.user, data.access_token, data.refresh_token);
       const redirects: Record<string, string> = {
-        client:    "/dashboard",
+        client:    "/profil",
         couturier: "/dashboard/couturier",
         vendeur:   "/dashboard/vendeur",
         admin:     "/admin",
       };
-      router.push(redirects[data.user.role] ?? "/dashboard");
+      router.push(redirects[data.user.role] ?? "/profil");
     } catch (err: unknown) {
-      const message =
-        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
-        "Identifiants incorrects";
-      setError(message);
+      setError(getApiErrorMessage(err, "Identifiants incorrects."));
     } finally {
       setLoading(false);
     }
@@ -58,11 +69,13 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+          <label htmlFor="login-identifier" className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
             Téléphone ou email
           </label>
           <input
+            id="login-identifier"
             type="text"
+            autoComplete="username"
             className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
             placeholder="+225 07 00 00 00 00 ou email..."
             value={identifier}
@@ -72,12 +85,14 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+          <label htmlFor="login-password" className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
             Mot de passe
           </label>
           <div className="relative">
             <input
+              id="login-password"
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               className="w-full px-3 py-2.5 pr-10 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
               placeholder="••••••••"
               value={password}
@@ -87,7 +102,8 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-tf-text-muted hover:text-tf-text transition-colors"
+              aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 rounded-md text-tf-text-muted hover:text-tf-text transition-colors"
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
@@ -97,7 +113,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 py-3 px-6 bg-tf-gold text-tf-black rounded-md font-sans font-bold text-btn hover:bg-tf-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-gold w-full mt-2"
         >
           {loading ? "Connexion..." : "Se connecter"}
         </button>

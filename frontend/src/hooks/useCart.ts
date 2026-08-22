@@ -5,10 +5,12 @@ import { useEffect } from "react";
 import { api } from "@/lib/api";
 import { Cart, CartItemAdd } from "@/types/cart";
 import { useCartStore } from "@/store/cart";
+import { useAuthStore } from "@/store/auth";
 
 export function useCart() {
   const queryClient = useQueryClient();
   const { setNbArticles } = useCartStore();
+  const { isAuthenticated, user } = useAuthStore();
 
   const { data: cart, isLoading } = useQuery<Cart>({
     queryKey: ["cart"],
@@ -17,6 +19,9 @@ export function useCart() {
       return data;
     },
     staleTime: 30_000,
+    // Seuls les comptes client ont un panier — un vendeur/couturier qui prévisualise
+    // sa vitrine ("Ma vitrine") ne doit pas déclencher de vrai panier.
+    enabled: isAuthenticated && user?.role === "client",
   });
 
   useEffect(() => {

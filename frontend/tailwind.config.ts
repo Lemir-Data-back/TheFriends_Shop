@@ -44,7 +44,7 @@ const config: Config = {
       fontFamily: {
         serif: ["Georgia", "'Times New Roman'", "serif"],
         sans: ["Inter", "Helvetica Neue", "Arial", "sans-serif"],
-        mono: ["Courier New", "monospace"],
+        mono: ["var(--font-plex-mono)", "'IBM Plex Mono'", "'Courier New'", "monospace"],
       },
 
       fontSize: {

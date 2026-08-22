@@ -23,7 +23,7 @@ export default function LooksPage() {
         </h2>
         <p className="font-sans text-[14px] text-tf-text-muted max-w-md mx-auto leading-relaxed mb-8">
           Partage tes tenues, inspire-toi des looks de la communauté
-          et achète directement les articles portés par d'autres membres.
+          et achète directement les articles portés par d&apos;autres membres.
         </p>
 
         {/* Aperçu des fonctionnalités */}

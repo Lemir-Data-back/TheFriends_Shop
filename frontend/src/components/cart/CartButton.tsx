@@ -9,7 +9,7 @@ export function CartButton() {
   return (
     <button
       onClick={toggleCart}
-      className="relative p-2 text-white/70 hover:text-white transition-colors"
+      className="relative p-3 -m-1 rounded-full text-white/70 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold"
       aria-label="Ouvrir le panier"
     >
       <ShoppingBag size={20} />

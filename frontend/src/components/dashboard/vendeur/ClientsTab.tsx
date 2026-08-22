@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { Users, TrendingUp, Clock, AlertTriangle, Sparkles, ArrowRight } from "lucide-react"
+import { Users, TrendingUp, Clock, Sparkles, ArrowRight } from "lucide-react"
 import { api } from "@/lib/api"
 import { formatPrix } from "@/lib/utils"
 
@@ -36,13 +36,13 @@ const STATUT_LABELS: Record<string, string> = {
 }
 
 function ScoreBar({ score }: { score: number }) {
-  const color = score >= 4.5 ? "#C9A84C" : score >= 3.5 ? "#2D6A4F" : score >= 2.5 ? "#6B6760" : "#C0392B"
+  const color = score >= 4.5 ? "#C9A84C" : score >= 3.5 ? "#2D6A4F" : score >= 2.5 ? "#7A766F" : "#C0392B"
   return (
     <div className="flex items-center gap-1.5">
       <div className="w-16 h-1.5 bg-tf-gray-soft rounded-full overflow-hidden">
         <div className="h-full rounded-full" style={{ width: `${(score / 5) * 100}%`, backgroundColor: color }} />
       </div>
-      <span className="font-sans text-[11px] font-bold tabular-nums" style={{ color }}>{score.toFixed(1)}</span>
+      <span className="font-mono text-[11px] font-bold tabular-nums" style={{ color }}>{score.toFixed(1)}</span>
     </div>
   )
 }
@@ -102,7 +102,7 @@ export function VendeurClientsTab() {
             <div className="flex items-center gap-1.5 mb-1.5">{icon}
               <span className="font-sans text-[11px] text-tf-text-muted">{label}</span>
             </div>
-            <p className="font-sans text-[20px] font-bold tabular-nums text-tf-black">{value}</p>
+            <p className="font-mono text-[20px] font-bold tabular-nums text-tf-black">{value}</p>
           </div>
         ))}
       </div>
@@ -116,8 +116,10 @@ export function VendeurClientsTab() {
           ].map((t) => (
             <button
               key={t.id}
+              role="tab"
+              aria-selected={view === t.id}
               onClick={() => setView(t.id as typeof view)}
-              className={`px-5 py-3.5 font-sans text-[13px] font-semibold border-b-2 transition-colors ${
+              className={`px-5 py-3.5 font-sans text-[13px] font-semibold border-b-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                 view === t.id ? "border-tf-black text-tf-black" : "border-transparent text-tf-text-muted hover:text-tf-text"
               }`}
             >
@@ -151,9 +153,9 @@ export function VendeurClientsTab() {
                         {STATUT_LABELS[c.statut]}
                       </span>
                     </div>
-                    <p className="col-span-2 font-sans text-[13px] font-bold tabular-nums text-tf-text text-right">{c.nb_commandes}</p>
-                    <p className="col-span-2 font-sans text-[13px] font-bold tabular-nums text-tf-text text-right">{formatPrix(c.ca_total)}</p>
-                    <p className="col-span-2 font-sans text-[12px] tabular-nums text-tf-text-muted text-right">{formatPrix(c.panier_moyen)}</p>
+                    <p className="col-span-2 font-mono text-[13px] font-bold tabular-nums text-tf-text text-right">{c.nb_commandes}</p>
+                    <p className="col-span-2 font-mono text-[13px] font-bold tabular-nums text-tf-text text-right">{formatPrix(c.ca_total)}</p>
+                    <p className="col-span-2 font-mono text-[12px] tabular-nums text-tf-text-muted text-right">{formatPrix(c.panier_moyen)}</p>
                     <div className="col-span-2 flex justify-end">
                       <ScoreBar score={c.score_confiance} />
                     </div>
@@ -186,7 +188,7 @@ export function VendeurClientsTab() {
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-sans text-[12px] font-bold tabular-nums text-tf-text">{formatPrix(c.ca_total)}</span>
+                        <span className="font-mono text-[12px] font-bold tabular-nums text-tf-text">{formatPrix(c.ca_total)}</span>
                         <Link
                           href={`/messages?client=${c.client_id}`}
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-tf-gold text-tf-black rounded-md font-sans font-bold text-[11px] hover:bg-tf-gold-light transition-colors"
@@ -218,7 +220,7 @@ export function VendeurClientsTab() {
             <div key={i} className="flex items-start justify-between gap-4 p-3 bg-[rgba(201,168,76,0.05)] border border-[rgba(201,168,76,0.2)] rounded-lg">
               <div>
                 <p className="font-sans text-[13px] font-semibold text-tf-text">
-                  <span className="text-tf-gold">{s.client}</span> cherche : <span className="italic">"{s.recherche}"</span>
+                  <span className="text-tf-gold">{s.client}</span> cherche : <span className="italic">&ldquo;{s.recherche}&rdquo;</span>
                 </p>
                 <p className="font-sans text-[12px] text-[#2D6A4F] mt-0.5">✓ Correspondance dans ton stock : {s.match}</p>
               </div>

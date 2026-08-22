@@ -26,7 +26,8 @@ export function PeriodFilter({ value, onChange }: PeriodFilterProps) {
         <button
           key={p.value}
           onClick={() => onChange(p.value)}
-          className={`px-3 py-1.5 rounded-full font-sans text-[12px] font-semibold whitespace-nowrap transition-all duration-150 ${
+          aria-pressed={value === p.value}
+          className={`px-3 py-1.5 rounded-full font-sans text-[12px] font-semibold whitespace-nowrap transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
             value === p.value
               ? "bg-white text-tf-black shadow-sm"
               : "text-tf-text-muted hover:text-tf-text"

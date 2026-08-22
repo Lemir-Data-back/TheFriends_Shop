@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import {
-  ShieldCheck, Ruler, Scissors, CreditCard, MessageCircle, Heart,
+  ShieldCheck, Ruler, Scissors, MessageCircle,
   Store, BadgeCheck, Calendar, TrendingUp, Smartphone, DollarSign,
   Package, BarChart2, Tag, Star, Users, Zap, ArrowRight,
   Lightbulb, PieChart, AlertTriangle, TrendingDown, Sparkles,
   Wallet, ClipboardList, UserCheck, Bell, RefreshCw,
 } from "lucide-react"
+import { TiltCard } from "@/components/ui/TiltCard"
 
 // ── Hook scroll animation ────────────────────────────────────────────────────
 
@@ -68,22 +69,12 @@ const ACTORS = [
       {
         icon: <Scissors size={20} />,
         titre: "Couture sur mesure en ligne",
-        desc: "Upload ton tissu et tes photos de modèle. Reçois des devis de couturiers et choisis le meilleur.",
-      },
-      {
-        icon: <CreditCard size={20} />,
-        titre: "Paiement en plusieurs fois",
-        desc: "Certains vendeurs te permettent de payer en 2x, 3x ou 6x. Tu reçois dès que le total est atteint.",
+        desc: "Envoie ton tissu et tes photos de modèle. Reçois des devis de couturiers et choisis le meilleur.",
       },
       {
         icon: <MessageCircle size={20} />,
         titre: "Messagerie directe",
         desc: "Discute avec le vendeur ou le couturier avant de commander. Plus d'ambiguïté.",
-      },
-      {
-        icon: <Heart size={20} />,
-        titre: "Communauté & looks",
-        desc: "Inspire-toi des looks partagés par la communauté et achète les articles directement depuis les posts.",
       },
     ],
   },
@@ -148,11 +139,6 @@ const ACTORS = [
         desc: "Articles les plus vus, taux de conversion, stock à renouveler. Des données claires pour mieux décider.",
       },
       {
-        icon: <CreditCard size={20} />,
-        titre: "Active le paiement en tranches",
-        desc: "Propose à tes clients de payer en 2x, 3x ou 6x. Tu reçois le tout dès que le montant est atteint.",
-      },
-      {
         icon: <Tag size={20} />,
         titre: "Promotions avec date d'expiration",
         desc: "Crée tes promos et fixe une date de fin. L'app gère la bascule automatiquement.",
@@ -186,7 +172,8 @@ function ActorTabs() {
             <button
               key={a.id}
               onClick={() => setActive(a.id)}
-              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+              aria-pressed={active === a.id}
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2 ${
                 active === a.id
                   ? "bg-tf-black text-white shadow-sm"
                   : "text-tf-text-muted hover:text-tf-text"
@@ -210,10 +197,23 @@ function ActorTabs() {
           {actor.features.map((f, i) => (
             <div
               key={f.titre}
-              className="bg-white border border-tf-border rounded-xl p-5 hover:border-[rgba(201,168,76,0.5)] hover:shadow-card transition-all duration-200 group"
+              className={`relative bg-white border rounded-xl p-5 transition-all duration-200 ease-out group ${
+                (f as { soon?: boolean }).soon
+                  ? "border-tf-border opacity-70"
+                  : "border-tf-border hover:border-[rgba(201,168,76,0.5)] hover:shadow-card-hover motion-safe:hover:-translate-y-1"
+              }`}
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <div className="w-9 h-9 rounded-lg bg-tf-gray-soft flex items-center justify-center mb-4 text-tf-gold group-hover:bg-[rgba(201,168,76,0.1)] transition-colors">
+              {(f as { soon?: boolean }).soon && (
+                <span className="absolute top-3 right-3 px-2 py-0.5 bg-tf-gray-soft border border-tf-border rounded-full font-sans text-[9px] font-semibold text-tf-text-muted uppercase tracking-wider">
+                  Bientôt
+                </span>
+              )}
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-4 transition-colors ${
+                (f as { soon?: boolean }).soon
+                  ? "bg-tf-gray-soft text-tf-text-muted"
+                  : "bg-tf-gray-soft text-tf-gold group-hover:bg-[rgba(201,168,76,0.1)]"
+              }`}>
                 {f.icon}
               </div>
               <h4 className="font-sans font-semibold text-tf-text text-[15px] mb-1.5">{f.titre}</h4>
@@ -322,9 +322,9 @@ function PaymentBanner() {
 function StatPill({ label, value, up }: { label: string; value: string; up?: boolean }) {
   return (
     <div className="bg-tf-gray-soft rounded-lg px-3 py-2.5 flex items-center justify-between gap-3">
-      <span className="font-sans text-[11px] font-medium text-[#6B6760]">{label}</span>
+      <span className="font-sans text-[11px] font-medium text-tf-text-muted">{label}</span>
       <span
-        className={`font-sans text-[13px] font-bold tabular-nums tracking-tight ${
+        className={`font-mono text-[13px] font-bold tabular-nums tracking-tight ${
           up === undefined ? "text-tf-text" : up ? "text-[#2D6A4F]" : "text-[#C0392B]"
         }`}
       >
@@ -339,7 +339,7 @@ function IaCard({ text }: { text: string }) {
   return (
     <div className="border border-[rgba(201,168,76,0.35)] bg-[rgba(201,168,76,0.06)] rounded-lg p-3 flex gap-2.5">
       <Sparkles size={14} className="text-tf-gold mt-0.5 shrink-0" />
-      <p className="font-sans text-[12px] text-tf-text leading-relaxed italic">"{text}"</p>
+      <p className="font-sans text-[12px] text-tf-text leading-relaxed italic">&ldquo;{text}&rdquo;</p>
     </div>
   )
 }
@@ -358,18 +358,6 @@ function AlertCard({ text, type = "warning" }: { text: string; type?: "warning" 
   )
 }
 
-function ScoreStar({ score }: { score: number }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <div className="flex gap-0.5">
-        {[1,2,3,4,5].map(i => (
-          <div key={i} className={`w-2.5 h-2.5 rounded-sm ${i <= Math.round(score) ? "bg-tf-gold" : "bg-tf-border"}`} />
-        ))}
-      </div>
-      <span className="font-sans text-[13px] font-semibold text-tf-text">{score.toFixed(1)}</span>
-    </div>
-  )
-}
 
 function ProgressBar({ value, max, color = "#C9A84C" }: { value: number; max: number; color?: string }) {
   return (
@@ -456,8 +444,8 @@ function CouturierDashboardMock() {
           { label: "Comm.", score: 4.6 },
         ].map(({ label, score }) => (
           <div key={label} className="bg-tf-gray-soft rounded-lg p-2.5">
-            <p className="font-sans text-[10px] font-semibold text-[#6B6760] uppercase tracking-wide mb-1.5">{label}</p>
-            <p className="font-sans text-[18px] font-bold tabular-nums text-tf-text leading-none">{score.toFixed(1)}</p>
+            <p className="font-sans text-[10px] font-semibold text-tf-text-muted uppercase tracking-wide mb-1.5">{label}</p>
+            <p className="font-mono text-[18px] font-bold tabular-nums text-tf-text leading-none">{score.toFixed(1)}</p>
             <p className="font-sans text-[9px] text-tf-text-muted mt-0.5">/ 5</p>
           </div>
         ))}
@@ -487,7 +475,7 @@ function CouturierDashboardMock() {
                 <p className="font-sans text-[10px] text-tf-text-muted">{c.cmds} commandes</p>
               </div>
               <div className="text-right shrink-0">
-                <p className="font-sans text-[12px] font-bold tabular-nums text-tf-text">{c.ca}</p>
+                <p className="font-mono text-[12px] font-bold tabular-nums text-tf-text">{c.ca}</p>
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
                   c.label === "Premium" ? "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark" : "bg-[#D8F3DC] text-[#2D6A4F]"
                 }`}>{c.label}</span>
@@ -498,11 +486,11 @@ function CouturierDashboardMock() {
       </div>
 
       {/* Clients inactifs */}
-      <div className="border border-[rgba(184,137,42,0.4)] bg-[#FFF8EC] rounded-lg p-3 space-y-1.5">
+      <div className="border border-[rgba(184,137,42,0.4)] bg-tf-warning-bg rounded-lg p-3 space-y-1.5">
         <p className="font-sans text-[11px] font-bold text-[#B8892A] uppercase tracking-wide">
           ⏰ 2 clients inactifs depuis 60 j+
         </p>
-        <p className="font-sans text-[11px] text-[#6B6760]">Koné B., Diallo A. — dernière commande il y a plus de 2 mois</p>
+        <p className="font-sans text-[11px] text-tf-text-muted">Koné B., Diallo A. — dernière commande il y a plus de 2 mois</p>
         <p className="font-sans text-[11px] font-semibold text-[#B8892A] cursor-pointer hover:underline">
           → Envoyer une relance personnalisée
         </p>
@@ -563,7 +551,7 @@ function VendeurDashboardMock() {
                 <p className="font-sans text-[10px] text-tf-text-muted">{c.cmds} commandes · panier moy. {Math.round(parseInt(c.ca) / c.cmds).toLocaleString("fr")} F</p>
               </div>
               <div className="text-right shrink-0">
-                <p className="font-sans text-[12px] font-bold tabular-nums text-tf-text">{c.ca}</p>
+                <p className="font-mono text-[12px] font-bold tabular-nums text-tf-text">{c.ca}</p>
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
                   c.label === "Premium"  ? "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark" :
                   c.label === "Fiable"   ? "bg-[#D8F3DC] text-[#2D6A4F]" :
@@ -574,17 +562,17 @@ function VendeurDashboardMock() {
           ))}
         </div>
         <div className="mt-2.5 pt-2.5 border-t border-tf-border flex justify-between">
-          <span className="font-sans text-[11px] text-[#6B6760]">Clients fidèles (3+ cmd)</span>
-          <span className="font-sans text-[12px] font-bold tabular-nums text-[#2D6A4F]">12 / 47</span>
+          <span className="font-sans text-[11px] text-tf-text-muted">Clients fidèles (3+ cmd)</span>
+          <span className="font-mono text-[12px] font-bold tabular-nums text-[#2D6A4F]">12 / 47</span>
         </div>
       </div>
 
       {/* Clients inactifs */}
-      <div className="border border-[rgba(184,137,42,0.4)] bg-[#FFF8EC] rounded-lg p-3 space-y-1.5">
+      <div className="border border-[rgba(184,137,42,0.4)] bg-tf-warning-bg rounded-lg p-3 space-y-1.5">
         <p className="font-sans text-[11px] font-bold text-[#B8892A] uppercase tracking-wide">
           ⏰ 5 clients inactifs depuis 30 j+
         </p>
-        <p className="font-sans text-[11px] text-[#6B6760]">Ils ont acheté par le passé mais n'ont pas commandé ce mois</p>
+        <p className="font-sans text-[11px] text-tf-text-muted">Ils ont acheté par le passé mais n&apos;ont pas commandé ce mois</p>
         <p className="font-sans text-[11px] font-semibold text-[#B8892A] cursor-pointer hover:underline">
           → Suggérer un article en lien avec leurs achats précédents
         </p>
@@ -594,7 +582,7 @@ function VendeurDashboardMock() {
       <div className="border border-[rgba(201,168,76,0.35)] bg-[rgba(201,168,76,0.06)] rounded-lg p-3 flex gap-2.5">
         <Sparkles size={13} className="text-tf-gold mt-0.5 shrink-0" />
         <p className="font-sans text-[11px] text-tf-text leading-relaxed">
-          <strong>Bamba A.</strong> a cherché "jupe wax rouge L" — tu as cet article en stock à 8 500 FCFA
+          <strong>Bamba A.</strong> a cherché &ldquo;jupe wax rouge L&rdquo; — tu as cet article en stock à 8 500 FCFA
         </p>
       </div>
 
@@ -638,7 +626,7 @@ const INTELLIGENCE = [
       {
         icon: <Sparkles size={18} />,
         titre: "Suggestions par morphologie",
-        desc: "\"Les personnes avec ta silhouette portent beaucoup les coupes trapèze cette saison\" — conseils basés sur les vraies données de la communauté.",
+        desc: "\"Les personnes avec ta silhouette portent beaucoup les coupes trapèze cette saison\". Conseils basés sur les vraies données de la communauté.",
       },
       {
         icon: <UserCheck size={18} />,
@@ -760,7 +748,8 @@ function IntelligenceSection() {
             <button
               key={a.id}
               onClick={() => setActive(a.id)}
-              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+              aria-pressed={active === a.id}
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2 ${
                 active === a.id
                   ? "bg-tf-black text-white shadow-sm"
                   : "text-tf-text-muted hover:text-tf-text"
@@ -802,7 +791,7 @@ function IntelligenceSection() {
 
           {/* Mock dashboard */}
           <div className="lg:sticky lg:top-24">
-            {actor.mock}
+            <TiltCard>{actor.mock}</TiltCard>
           </div>
         </div>
       </div>
@@ -825,8 +814,9 @@ export function HomeSections() {
             <h2 className="font-serif text-h1 text-tf-text mb-3">
               Une plateforme pensée pour chacun
             </h2>
-            <p className="font-sans text-body text-tf-text-muted max-w-xl mx-auto leading-relaxed">
-              Client, couturier ou vendeur — TheFriends Shopping résout tes vrais problèmes du quotidien.
+            <p className="font-sans text-body text-tf-text-muted mx-auto leading-relaxed whitespace-nowrap">
+              Client, couturier ou vendeur.<br />
+              TheFriends Shopping résout tes vrais problèmes du quotidien.
             </p>
           </div>
         </FadeUp>
@@ -852,7 +842,7 @@ export function HomeSections() {
               La donnée travaille pour vous
             </h2>
             <p className="font-sans text-body text-tf-text-muted max-w-2xl mx-auto leading-relaxed">
-              Chaque action sur la plateforme génère des données. Ces données deviennent des conseils, des alertes et des prévisions personnalisés — pour chaque acteur.
+              Chaque action sur la plateforme génère des données. Ces données deviennent des conseils, des alertes et des prévisions personnalisés pour chaque acteur.
             </p>
           </div>
         </FadeUp>

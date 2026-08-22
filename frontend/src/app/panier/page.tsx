@@ -64,7 +64,7 @@ export default function PanierPage() {
       <div className="max-w-screen-lg mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <Link href="/shopping" className="text-tf-text-muted hover:text-tf-text transition-colors">
+          <Link href="/shopping" aria-label="Retour au shopping" className="text-tf-text-muted hover:text-tf-text transition-colors rounded-sm">
             <ArrowLeft size={20} />
           </Link>
           <h1 className="font-sans text-h2 font-bold text-tf-text">Mon panier</h1>
@@ -85,7 +85,7 @@ export default function PanierPage() {
             </p>
             <Link
               href="/shopping"
-              className="px-6 py-3 bg-tf-gold text-tf-black rounded-md font-bold text-[14px] hover:bg-tf-gold-light transition-colors"
+              className="btn-gold"
             >
               Aller en shopping
             </Link>
@@ -143,17 +143,20 @@ export default function PanierPage() {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => updateItem.mutate({ id: item.id, quantite: item.quantite - 1 })}
-                                className="w-7 h-7 flex items-center justify-center rounded-md border border-tf-border hover:border-tf-gold transition-colors"
+                                disabled={item.quantite <= 1}
+                                aria-label="Diminuer la quantité"
+                                className="w-7 h-7 flex items-center justify-center rounded-md border border-tf-border hover:border-tf-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                               >
                                 <Minus size={13} />
                               </button>
-                              <span className="font-sans text-[14px] font-medium w-5 text-center">
+                              <span className="font-sans text-[14px] font-medium w-5 text-center" aria-live="polite">
                                 {item.quantite}
                               </span>
                               <button
                                 onClick={() => updateItem.mutate({ id: item.id, quantite: item.quantite + 1 })}
                                 disabled={item.quantite >= 10}
-                                className="w-7 h-7 flex items-center justify-center rounded-md border border-tf-border hover:border-tf-gold transition-colors disabled:opacity-40"
+                                aria-label="Augmenter la quantité"
+                                className="w-7 h-7 flex items-center justify-center rounded-md border border-tf-border hover:border-tf-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                               >
                                 <Plus size={13} />
                               </button>
@@ -165,7 +168,8 @@ export default function PanierPage() {
                               </span>
                               <button
                                 onClick={() => removeItem.mutate(item.id)}
-                                className="text-tf-text-muted hover:text-red-500 transition-colors"
+                                aria-label={`Retirer ${item.product.titre} du panier`}
+                                className="p-1.5 -m-1.5 rounded-md text-tf-text-muted hover:text-tf-error transition-colors"
                               >
                                 <Trash2 size={16} />
                               </button>
@@ -191,7 +195,7 @@ export default function PanierPage() {
                     <button
                       onClick={() => handleCommander(groupe)}
                       disabled={commandeEnCours === groupe.shop_id}
-                      className="w-full py-3 bg-tf-black text-white rounded-md font-sans font-bold text-[14px] hover:bg-tf-charbon transition-colors disabled:opacity-50"
+                      className="btn-primary w-full"
                     >
                       {commandeEnCours === groupe.shop_id ? "Commande en cours..." : `Commander chez ${groupe.shop_nom}`}
                     </button>
@@ -202,7 +206,7 @@ export default function PanierPage() {
               {/* Vider le panier */}
               <button
                 onClick={() => clearCart.mutate()}
-                className="text-[13px] text-tf-text-muted hover:text-red-500 transition-colors flex items-center gap-1.5"
+                className="text-[13px] text-tf-text-muted hover:text-tf-error transition-colors flex items-center gap-1.5 rounded-sm"
               >
                 <Trash2 size={14} />
                 Vider le panier
@@ -226,7 +230,7 @@ export default function PanierPage() {
                 <div className="border-t border-tf-border pt-4">
                   <div className="flex justify-between items-center">
                     <span className="font-sans text-[14px] font-semibold text-tf-text">Total</span>
-                    <span className="font-serif text-[20px] font-bold text-tf-black">{formatPrix(cart.total)}</span>
+                    <span className="font-mono text-[20px] font-bold text-tf-black">{formatPrix(cart.total)}</span>
                   </div>
                   <p className="font-sans text-[11px] text-tf-text-muted mt-1">Livraison calculée à la commande</p>
                 </div>

@@ -82,7 +82,7 @@ export function CouturierClientsTab() {
             <div className="flex items-center gap-1.5 mb-1.5">{icon}
               <span className="font-sans text-[11px] text-tf-text-muted">{label}</span>
             </div>
-            <p className="font-sans text-[20px] font-bold tabular-nums text-tf-black">{value}</p>
+            <p className="font-mono text-[20px] font-bold tabular-nums text-tf-black">{value}</p>
           </div>
         ))}
       </div>
@@ -97,8 +97,10 @@ export function CouturierClientsTab() {
           ].map((t) => (
             <button
               key={t.id}
+              role="tab"
+              aria-selected={view === t.id}
               onClick={() => setView(t.id as typeof view)}
-              className={`px-5 py-3.5 font-sans text-[13px] font-semibold whitespace-nowrap border-b-2 transition-colors ${
+              className={`px-5 py-3.5 font-sans text-[13px] font-semibold whitespace-nowrap border-b-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                 view === t.id ? "border-tf-black text-tf-black" : "border-transparent text-tf-text-muted hover:text-tf-text"
               }`}
             >
@@ -135,7 +137,7 @@ export function CouturierClientsTab() {
                     </span>
                   </div>
                 )}
-                <p className="font-sans text-[13px] font-bold tabular-nums text-tf-black shrink-0">{formatPrix(c.ca_total)}</p>
+                <p className="font-mono text-[13px] font-bold tabular-nums text-tf-black shrink-0">{formatPrix(c.ca_total)}</p>
               </div>
             ))}
           </div>
@@ -171,7 +173,7 @@ export function CouturierClientsTab() {
                   {c.statut === "surveille" && (
                     <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#C0392B]">
                       <AlertTriangle size={11} />
-                      Client surveillé — historique d'annulations ou comportement signalé
+                      Client surveillé — historique d&apos;annulations ou comportement signalé
                     </div>
                   )}
                 </div>
@@ -227,7 +229,7 @@ export function CouturierClientsTab() {
             <div key={i} className="flex items-start justify-between gap-4 p-3 bg-[rgba(201,168,76,0.04)] border border-[rgba(201,168,76,0.2)] rounded-lg">
               <div>
                 <p className="font-sans text-[13px] font-semibold text-tf-text">
-                  <span className="text-tf-gold">{s.client}</span> cherche : <span className="italic">"{s.recherche}"</span>
+                  <span className="text-tf-gold">{s.client}</span> cherche : <span className="italic">&ldquo;{s.recherche}&rdquo;</span>
                 </p>
                 {s.match
                   ? <p className="font-sans text-[12px] text-[#2D6A4F] mt-0.5">✓ Tu as un modèle correspondant dans ton catalogue</p>

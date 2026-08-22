@@ -73,7 +73,7 @@ export default function ChatPage() {
     <div className="flex flex-col h-screen bg-tf-bg">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-tf-border flex-shrink-0">
-        <Link href="/messages" className="text-tf-text-muted hover:text-tf-text transition-colors">
+        <Link href="/messages" aria-label="Retour aux messages" className="text-tf-text-muted hover:text-tf-text transition-colors rounded-sm">
           <ArrowLeft size={20} />
         </Link>
         <div className="w-9 h-9 rounded-full bg-tf-black flex items-center justify-center">
@@ -90,7 +90,7 @@ export default function ChatPage() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" role="log" aria-live="polite" aria-label="Messages de la conversation">
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -130,12 +130,14 @@ export default function ChatPage() {
           onChange={(e) => setTexte(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Écris un message..."
+          aria-label="Écrire un message"
           rows={1}
           className="flex-1 resize-none px-4 py-2.5 rounded-2xl border border-tf-border bg-tf-bg font-sans text-[14px] text-tf-text placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors max-h-32"
         />
         <button
           onClick={handleSend}
           disabled={!texte.trim() || sendMessage.isPending}
+          aria-label="Envoyer le message"
           className="w-10 h-10 bg-tf-gold text-tf-black rounded-full flex items-center justify-center hover:bg-tf-gold-light transition-colors disabled:opacity-40 flex-shrink-0"
         >
           <Send size={16} />

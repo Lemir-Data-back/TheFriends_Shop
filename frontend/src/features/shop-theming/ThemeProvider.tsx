@@ -80,7 +80,7 @@ export function ShopThemePreview({
       style={{
         backgroundColor: theme.couleur_fond,
         color: theme.couleur_texte,
-        // @ts-ignore — CSS variables custom
+        // @ts-expect-error — CSS variables custom
         "--tf-shop-primary": theme.couleur_principale,
         "--tf-shop-secondary": theme.couleur_secondaire,
         "--tf-shop-bg": theme.couleur_fond,

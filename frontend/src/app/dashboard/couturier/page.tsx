@@ -1,20 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import {
   Scissors, Star, TrendingUp, Clock, Send,
-  LayoutDashboard, Users, BarChart2,
+  LayoutDashboard, Users, BarChart2, Package, Settings,
 } from "lucide-react"
 import { api } from "@/lib/api"
 import { formatPrix } from "@/lib/utils"
 import { STATUT_LABELS, STATUT_COLORS, Order } from "@/types/order"
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs"
 import { CouturierClientsTab } from "@/components/dashboard/couturier/ClientsTab"
+import { CatalogueStockTab } from "@/components/dashboard/CatalogueStockTab"
+import { ParametresTab } from "@/components/dashboard/ParametresTab"
+import { EvolutionCharts, EvolutionPoint } from "@/components/dashboard/EvolutionCharts"
 import { DateRangePicker, DateRange, defaultRange, formatRangeLabel } from "@/components/dashboard/DateRangePicker"
 
 interface CouturierDashboard {
+  shop_id?: number
   stats: {
     nb_demandes_ouvertes: number
     nb_devis_envoyes: number
@@ -33,6 +38,7 @@ interface CouturierDashboard {
     created_at: string
   }[]
   commandes_en_cours: Order[]
+  evolution_mensuelle?: EvolutionPoint[]
 }
 
 function ProgressBar({ value, color = "#C9A84C" }: { value: number; color?: string }) {
@@ -43,9 +49,23 @@ function ProgressBar({ value, color = "#C9A84C" }: { value: number; color?: stri
   )
 }
 
-export default function DashboardCouturierPage() {
-  const [tab,    setTab]    = useState("overview")
+function DashboardCouturierContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [tab,    setTab]    = useState(searchParams.get("tab") ?? "overview")
   const [range, setRange] = useState<DateRange>(defaultRange)
+
+  // Réagit aux liens internes (Accès rapides, sidebar) même sans remontage de page
+  useEffect(() => {
+    setTab(searchParams.get("tab") ?? "overview")
+  }, [searchParams])
+
+  // Change d'onglet ET met à jour l'URL — sinon la sidebar (qui lit l'URL) reste
+  // bloquée sur l'ancien onglet quand on clique un onglet interne à la page.
+  function handleTabChange(newTab: string) {
+    setTab(newTab)
+    router.replace(newTab === "overview" ? "/dashboard/couturier" : `/dashboard/couturier?tab=${newTab}`, { scroll: false })
+  }
 
   const { data, isLoading } = useQuery<CouturierDashboard>({
     queryKey: ["dashboard-couturier", range],
@@ -56,9 +76,11 @@ export default function DashboardCouturierPage() {
   })
 
   const TABS = [
-    { id: "overview",  label: "Vue d'ensemble", icon: <LayoutDashboard size={14} /> },
-    { id: "clients",   label: "Clients",         icon: <Users size={14} />, badge: data?.stats.nb_demandes_ouvertes },
-    { id: "atelier",   label: "Mon atelier",     icon: <BarChart2 size={14} /> },
+    { id: "overview",    label: "Vue d'ensemble", icon: <LayoutDashboard size={14} /> },
+    { id: "catalogue",   label: "Catalogue",       icon: <Package size={14} /> },
+    { id: "clients",     label: "Clients",         icon: <Users size={14} />, badge: data?.stats.nb_demandes_ouvertes },
+    { id: "analytique",  label: "Analytique",      icon: <BarChart2 size={14} /> },
+    { id: "parametres",  label: "Paramètres",      icon: <Settings size={14} /> },
   ]
 
   if (isLoading) {
@@ -80,10 +102,12 @@ export default function DashboardCouturierPage() {
             <p className="font-sans text-[13px] text-tf-text-muted">Tableau de bord</p>
             <h1 className="font-serif text-h1 text-tf-black">Espace Couturier</h1>
           </div>
-          <DateRangePicker value={range} onChange={setRange} />
+          <div className="flex flex-wrap items-center gap-3">
+            <DateRangePicker value={range} onChange={setRange} />
+          </div>
         </div>
 
-        <DashboardTabs tabs={TABS} active={tab} onChange={setTab} />
+        <DashboardTabs tabs={TABS} active={tab} onChange={handleTabChange} />
 
         {/* ── Vue d'ensemble ──────────────────────────────────────────── */}
         {tab === "overview" && (
@@ -92,18 +116,20 @@ export default function DashboardCouturierPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { label: "Demandes ouvertes", value: data?.stats.nb_demandes_ouvertes ?? 0,  icon: <Scissors size={18} className="text-tf-gold" /> },
-                { label: "En cours",          value: data?.stats.nb_commandes_en_cours ?? 0, icon: <Clock size={18} className="text-blue-500" /> },
-                { label: formatRangeLabel(range), value: formatPrix(data?.stats.revenu_mois ?? 0), icon: <TrendingUp size={18} className="text-green-500" /> },
+                { label: "En cours",          value: data?.stats.nb_commandes_en_cours ?? 0, icon: <Clock size={18} className="text-tf-info" /> },
+                { label: formatRangeLabel(range), value: formatPrix(data?.stats.revenu_mois ?? 0), icon: <TrendingUp size={18} className="text-tf-success" /> },
                 { label: "Note moyenne",      value: `${data?.stats.score_moyen ?? 0}/5`,      icon: <Star size={18} className="text-tf-gold" /> },
               ].map(({ label, value, icon }) => (
                 <div key={label} className="bg-white rounded-xl border border-tf-border p-4">
                   <div className="flex items-center gap-2 mb-2">{icon}
                     <p className="font-sans text-[12px] text-tf-text-muted">{label}</p>
                   </div>
-                  <p className="font-sans text-[20px] font-bold tabular-nums text-tf-black">{value}</p>
+                  <p className="font-mono text-[20px] font-bold tabular-nums text-tf-black">{value}</p>
                 </div>
               ))}
             </div>
+
+            {data?.evolution_mensuelle && <EvolutionCharts data={data.evolution_mensuelle} />}
 
             {/* Revenu + taux + scores */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -111,7 +137,7 @@ export default function DashboardCouturierPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h2 className="font-sans text-[14px] font-bold text-tf-text mb-1">Revenu total</h2>
-                    <p className="font-serif text-[28px] font-bold tabular-nums text-tf-black">
+                    <p className="font-mono text-[28px] font-bold tabular-nums text-tf-black">
                       {formatPrix(data?.stats.revenu_total ?? 0)}
                     </p>
                     <p className="font-sans text-[12px] text-tf-text-muted mt-1">
@@ -119,8 +145,8 @@ export default function DashboardCouturierPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-sans text-[12px] text-tf-text-muted">Taux d'acceptation</p>
-                    <p className="font-sans text-[24px] font-bold tabular-nums text-[#2D6A4F]">
+                    <p className="font-sans text-[12px] text-tf-text-muted">Taux d&apos;acceptation</p>
+                    <p className="font-mono text-[24px] font-bold tabular-nums text-[#2D6A4F]">
                       {data?.stats.taux_acceptation ?? 0}%
                     </p>
                     <p className="font-sans text-[11px] text-tf-text-muted">{data?.stats.nb_devis_envoyes} devis envoyés</p>
@@ -136,7 +162,7 @@ export default function DashboardCouturierPage() {
                   {[
                     { label: "Commandes actives", href: "/commandes" },
                     { label: "Messages clients",  href: "/messages" },
-                    { label: "Mon profil",        href: "/profil" },
+                    { label: "Paramètres",        href: "/dashboard/couturier?tab=parametres" },
                   ].map(({ label, href }) => (
                     <Link key={href} href={href} className="block font-sans text-[13px] text-tf-gold hover:underline">
                       {label} →
@@ -190,7 +216,7 @@ export default function DashboardCouturierPage() {
                             {STATUT_LABELS[order.statut]}
                           </span>
                         </div>
-                        <span className="font-sans text-[13px] font-bold tabular-nums text-tf-black">{formatPrix(order.montant)}</span>
+                        <span className="font-mono text-[13px] font-bold tabular-nums text-tf-black">{formatPrix(order.montant)}</span>
                       </Link>
                     ))}
                   </div>
@@ -200,11 +226,16 @@ export default function DashboardCouturierPage() {
           </div>
         )}
 
+        {/* ── Catalogue ────────────────────────────────────────────────── */}
+        {tab === "catalogue" && data?.shop_id && (
+          <CatalogueStockTab shopId={data.shop_id} role="couturier" />
+        )}
+
         {/* ── Clients ──────────────────────────────────────────────────── */}
         {tab === "clients" && <CouturierClientsTab />}
 
-        {/* ── Mon atelier (analytique) ─────────────────────────────────── */}
-        {tab === "atelier" && (
+        {/* ── Analytique ───────────────────────────────────────────────── */}
+        {tab === "analytique" && (
           <div className="space-y-4">
             {/* Scores détaillés */}
             <div className="bg-white rounded-xl border border-tf-border p-5">
@@ -217,7 +248,7 @@ export default function DashboardCouturierPage() {
                 ].map(({ label, score, color }) => (
                   <div key={label} className="text-center">
                     <p className="font-sans text-[11px] font-bold text-tf-text-muted uppercase tracking-wide mb-2">{label}</p>
-                    <p className="font-sans text-[32px] font-bold tabular-nums" style={{ color }}>{score.toFixed(1)}</p>
+                    <p className="font-mono text-[32px] font-bold tabular-nums" style={{ color }}>{score.toFixed(1)}</p>
                     <p className="font-sans text-[11px] text-tf-text-muted">/ 5</p>
                     <ProgressBar value={(score / 5) * 100} color={color} />
                   </div>
@@ -241,7 +272,7 @@ export default function DashboardCouturierPage() {
                     <div className="flex justify-between mb-1">
                       <span className="font-sans text-[13px] text-tf-text">{t.label}</span>
                       <div className="flex items-center gap-2">
-                        <span className="font-sans text-[12px] font-bold tabular-nums" style={{ color: t.color }}>{t.delta}</span>
+                        <span className="font-mono text-[12px] font-bold tabular-nums" style={{ color: t.color }}>{t.delta}</span>
                         <span className="font-sans text-[11px] text-tf-text-muted">{t.recherches} recherches</span>
                       </div>
                     </div>
@@ -264,7 +295,7 @@ export default function DashboardCouturierPage() {
                       <p className="font-sans text-[13px] font-medium text-tf-text">{order.reference}</p>
                       <p className="font-sans text-[11px] text-tf-text-muted">{order.statut}</p>
                     </div>
-                    <span className="font-sans text-[13px] font-bold tabular-nums text-tf-black">{formatPrix(order.montant)}</span>
+                    <span className="font-mono text-[13px] font-bold tabular-nums text-tf-black">{formatPrix(order.montant)}</span>
                   </div>
                 ))}
                 {!data?.commandes_en_cours.length && (
@@ -276,6 +307,19 @@ export default function DashboardCouturierPage() {
             </div>
           </div>
         )}
+
+        {/* ── Paramètres ───────────────────────────────────────────────── */}
+        {tab === "parametres" && data?.shop_id && (
+          <ParametresTab shopId={data.shop_id} role="couturier" />
+        )}
     </div>
+  )
+}
+
+export default function DashboardCouturierPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardCouturierContent />
+    </Suspense>
   )
 }

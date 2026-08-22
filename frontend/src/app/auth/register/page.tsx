@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { api } from "@/lib/api";
+import { api, getApiErrorMessage } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { TokenResponse, UserRole } from "@/types/auth";
 
@@ -21,12 +20,16 @@ export default function RegisterPage() {
   const [step, setStep] = useState<1 | 2>(1);
   const [role, setRole] = useState<UserRole>("client");
   const [fullName, setFullName] = useState("");
+  const [shopNom, setShopNom] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isSeller = role === "couturier" || role === "vendeur";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,6 +37,14 @@ export default function RegisterPage() {
 
     if (!phone) {
       setError("Le numéro de téléphone est obligatoire");
+      return;
+    }
+    if (isSeller && !shopNom.trim()) {
+      setError(role === "couturier" ? "Le nom de l'atelier est obligatoire" : "Le nom de la boutique est obligatoire");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Les deux mots de passe ne correspondent pas");
       return;
     }
 
@@ -45,20 +56,18 @@ export default function RegisterPage() {
         phone: phone || undefined,
         password,
         role,
+        shop_nom: isSeller ? shopNom.trim() : undefined,
       });
       setAuth(data.user, data.access_token, data.refresh_token);
       const redirects: Record<string, string> = {
-        client:    "/dashboard",
+        client:    "/profil",
         couturier: "/dashboard/couturier",
         vendeur:   "/dashboard/vendeur",
         admin:     "/admin",
       };
-      router.push(redirects[data.user.role] ?? "/dashboard");
+      router.push(redirects[data.user.role] ?? "/profil");
     } catch (err: unknown) {
-      const message =
-        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
-        "Erreur lors de la création du compte";
-      setError(message);
+      setError(getApiErrorMessage(err, "Erreur lors de la création du compte. Réessaie."));
     } finally {
       setLoading(false);
     }
@@ -82,7 +91,8 @@ export default function RegisterPage() {
                 key={r.value}
                 type="button"
                 onClick={() => setRole(r.value)}
-                className={`w-full text-left p-4 rounded-lg border transition-all duration-150 ${
+                aria-pressed={role === r.value}
+                className={`w-full text-left p-4 rounded-lg border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2 ${
                   role === r.value
                     ? "border-tf-gold bg-[rgba(201,168,76,0.06)]"
                     : "border-tf-border hover:border-tf-text"
@@ -110,14 +120,14 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="flex-1 py-3 px-6 bg-transparent text-tf-text border border-tf-border rounded-md font-sans font-medium text-btn hover:border-tf-text transition-colors"
+                className="btn-outline flex-1"
               >
                 Retour
               </button>
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="flex-1 py-3 px-6 bg-tf-gold text-tf-black rounded-md font-sans font-bold text-btn hover:bg-tf-gold-light transition-colors"
+                className="btn-gold flex-1"
               >
                 Continuer
               </button>
@@ -134,12 +144,31 @@ export default function RegisterPage() {
               </div>
             )}
 
+            {isSeller && (
+              <div>
+                <label htmlFor="register-shop-nom" className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+                  {role === "couturier" ? "Nom de l'atelier" : "Nom de la boutique"} <span className="text-tf-gold">*</span>
+                </label>
+                <input
+                  id="register-shop-nom"
+                  type="text"
+                  className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
+                  placeholder={role === "couturier" ? "Atelier Awa Couture" : "Awa Boutique"}
+                  value={shopNom}
+                  onChange={(e) => setShopNom(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
             <div>
-              <label className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
-                Nom complet <span className="text-tf-gold">*</span>
+              <label htmlFor="register-fullname" className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+                {isSeller ? "Nom gérant" : "Nom complet"} <span className="text-tf-gold">*</span>
               </label>
               <input
+                id="register-fullname"
                 type="text"
+                autoComplete="name"
                 className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
                 placeholder="Awa Koné"
                 value={fullName}
@@ -149,11 +178,13 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+              <label htmlFor="register-phone" className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
                 Téléphone <span className="text-tf-gold">*</span>
               </label>
               <input
+                id="register-phone"
                 type="tel"
+                autoComplete="tel"
                 className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
                 placeholder="+225 07 00 00 00 00"
                 value={phone}
@@ -163,11 +194,13 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+              <label htmlFor="register-email" className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
                 Email
               </label>
               <input
+                id="register-email"
                 type="email"
+                autoComplete="email"
                 className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
                 placeholder="awa@exemple.com"
                 value={email}
@@ -176,12 +209,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+              <label htmlFor="register-password" className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
                 Mot de passe <span className="text-tf-gold">*</span>
               </label>
               <div className="relative">
                 <input
+                  id="register-password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   className="w-full px-3 py-2.5 pr-10 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
                   placeholder="8 caractères minimum"
                   value={password}
@@ -192,38 +227,49 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-tf-text-muted hover:text-tf-text transition-colors"
+                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 rounded-md text-tf-text-muted hover:text-tf-text transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
+            <div>
+              <label htmlFor="register-confirm-password" className="block font-sans text-[12px] font-medium text-tf-text uppercase tracking-widest mb-1.5">
+                Confirmer le mot de passe <span className="text-tf-gold">*</span>
+              </label>
+              <input
+                id="register-confirm-password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
+                placeholder="8 caractères minimum"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                minLength={8}
+              />
+            </div>
+
             <div className="flex gap-3 mt-2">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="flex-1 py-3 px-6 bg-transparent text-tf-text border border-tf-border rounded-md font-sans font-medium text-btn hover:border-tf-text transition-colors"
+                className="btn-outline flex-1"
               >
                 Retour
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 py-3 px-6 bg-tf-gold text-tf-black rounded-md font-sans font-bold text-btn hover:bg-tf-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-gold flex-1"
               >
                 {loading ? "Création..." : "Créer mon compte"}
               </button>
             </div>
           </form>
         )}
-
-        <p className="mt-6 text-center font-sans text-[13px] text-tf-text-muted">
-          Déjà un compte ?{" "}
-          <Link href="/auth/login" className="text-tf-gold-dark font-medium hover:underline">
-            Se connecter
-          </Link>
-        </p>
       </div>
   );
 }

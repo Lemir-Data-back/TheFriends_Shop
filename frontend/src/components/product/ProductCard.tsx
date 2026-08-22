@@ -29,7 +29,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       )}
     >
       {/* Image */}
-      <Link href={`/produits/${product.id}`} className="block relative aspect-[3/4] overflow-hidden bg-tf-gray-soft">
+      <Link href={`/boutique/${product.shop_id}/produits/${product.id}`} className="block relative aspect-[3/4] overflow-hidden bg-tf-gray-soft">
         {coverImage ? (
           <Image
             src={coverImage.url_cloudinary}
@@ -46,9 +46,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         {/* Badges superposés */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {hasPromo && (
+          {product.stock_statut === "rupture" ? (
+            <Badge variant="rupture">Rupture</Badge>
+          ) : product.stock_statut === "stock_faible" ? (
+            <Badge variant="stock-faible">Stock faible</Badge>
+          ) : hasPromo ? (
             <Badge variant="promo">-{remise}%</Badge>
-          )}
+          ) : null}
           {product.is_sur_mesure && (
             <Badge variant="sur-mesure">Sur mesure</Badge>
           )}
@@ -57,7 +61,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Bouton like */}
         <button
           onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
-          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm transition-colors hover:bg-white"
+          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold"
+          aria-pressed={liked}
           aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
         >
           <Heart
@@ -77,7 +82,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         )}
 
         {/* Titre */}
-        <Link href={`/produits/${product.id}`}>
+        <Link href={`/boutique/${product.shop_id}/produits/${product.id}`}>
           <h3 className="font-sans text-[13px] font-medium text-tf-text leading-snug line-clamp-2 hover:text-tf-gold transition-colors">
             {product.titre}
           </h3>
@@ -87,15 +92,15 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div className="mt-2 flex items-baseline gap-2">
           {hasPromo ? (
             <>
-              <span className="font-serif text-price text-tf-text">
+              <span className="font-mono text-price text-tf-text">
                 {formatPrix(product.prix_promo!)}
               </span>
-              <span className="font-serif text-[13px] text-tf-text-muted line-through">
+              <span className="font-mono text-[13px] text-tf-text-muted line-through">
                 {formatPrix(product.prix)}
               </span>
             </>
           ) : (
-            <span className="font-serif text-price text-tf-text">
+            <span className="font-mono text-price text-tf-text">
               {formatPrix(product.prix)}
             </span>
           )}

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect, Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Search, SlidersHorizontal, X, Star, MapPin, Package, CheckCircle } from "lucide-react"
@@ -109,12 +110,35 @@ function ShopCard({ shop }: { shop: Shop }) {
 // ── Page principale ───────────────────────────────────────────────────────────
 
 export default function ShoppingPage() {
+  return (
+    <Suspense fallback={null}>
+      <ShoppingContent />
+    </Suspense>
+  )
+}
+
+function ShoppingContent() {
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<"articles" | "boutiques">("articles")
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "")
   const [shopSearch, setShopSearch] = useState("")
   const [shopType, setShopType] = useState("")
   const [showFilters, setShowFilters] = useState(false)
-  const [filters, setFilters] = useState<ProductFilters>({ page: 1, limit: 20 })
+  const [filters, setFilters] = useState<ProductFilters>(() => ({
+    page: 1,
+    limit: 20,
+    categorie: (searchParams.get("categorie") as ProductCategorie) || undefined,
+    search: searchParams.get("search") || undefined,
+  }))
+
+  // Réagit aux liens de la navbar (catégorie/recherche) après le montage initial
+  useEffect(() => {
+    const categorie = (searchParams.get("categorie") as ProductCategorie) || undefined
+    const searchQuery = searchParams.get("search") || undefined
+    setFilters((f) => ({ ...f, categorie, search: searchQuery, page: 1 }))
+    setSearch(searchQuery ?? "")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   // ── Requêtes ──────────────────────────────────────────────────────────────
 
@@ -163,15 +187,17 @@ export default function ShoppingPage() {
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
 
           {/* Onglets Articles / Boutiques */}
-          <div className="flex border-b border-tf-border -mb-px">
+          <div role="tablist" className="flex border-b border-tf-border -mb-px">
             {[
               { id: "articles",  label: "Articles" },
               { id: "boutiques", label: "Boutiques" },
             ].map((t) => (
               <button
                 key={t.id}
+                role="tab"
+                aria-selected={activeTab === t.id}
                 onClick={() => setActiveTab(t.id as typeof activeTab)}
-                className={`px-5 py-3.5 font-sans text-[14px] font-semibold border-b-2 transition-colors ${
+                className={`px-5 py-3.5 font-sans text-[14px] font-semibold border-b-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                   activeTab === t.id
                     ? "border-tf-black text-tf-black"
                     : "border-transparent text-tf-text-muted hover:text-tf-text"
@@ -191,6 +217,7 @@ export default function ShoppingPage() {
                     <Search size={15} className="text-tf-text-muted shrink-0" />
                     <input
                       type="text"
+                      aria-label="Rechercher un article, un tissu..."
                       placeholder="Rechercher un article, un tissu..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
@@ -198,13 +225,19 @@ export default function ShoppingPage() {
                       className="flex-1 bg-transparent text-body text-tf-text placeholder:text-tf-text-muted outline-none"
                     />
                     {search && (
-                      <button onClick={() => { setSearch(""); setFilters((f) => ({ ...f, search: undefined })) }}>
+                      <button
+                        onClick={() => { setSearch(""); setFilters((f) => ({ ...f, search: undefined })) }}
+                        aria-label="Effacer la recherche"
+                        className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold"
+                      >
                         <X size={13} className="text-tf-text-muted hover:text-tf-text" />
                       </button>
                     )}
                   </div>
                   <button
                     onClick={() => setShowFilters(!showFilters)}
+                    aria-expanded={showFilters}
+                    aria-label="Afficher les filtres avancés"
                     className={cn(
                       "flex items-center gap-1.5 px-3 py-2 rounded-md border text-nav font-medium transition-colors",
                       showFilters ? "bg-tf-black text-white border-tf-black" : "bg-white text-tf-text border-tf-border hover:border-tf-text"
@@ -220,6 +253,7 @@ export default function ShoppingPage() {
                 <div className="flex items-center gap-2 mt-3 overflow-x-auto pb-0.5 scrollbar-none">
                   <button
                     onClick={() => setFilters((f) => ({ ...f, categorie: undefined, page: 1 }))}
+                    aria-pressed={!filters.categorie}
                     className={cn("shrink-0 px-3 py-1 rounded-full text-nav font-medium border transition-colors",
                       !filters.categorie ? "bg-tf-black text-white border-tf-black" : "bg-white text-tf-text-muted border-tf-border hover:border-tf-text"
                     )}
@@ -229,6 +263,7 @@ export default function ShoppingPage() {
                   {CATEGORIES.map((cat) => (
                     <button key={cat.value}
                       onClick={() => setFilters((f) => ({ ...f, categorie: f.categorie === cat.value ? undefined : cat.value, page: 1 }))}
+                      aria-pressed={filters.categorie === cat.value}
                       className={cn("shrink-0 px-3 py-1 rounded-full text-nav font-medium border transition-colors",
                         filters.categorie === cat.value ? "bg-tf-black text-white border-tf-black" : "bg-white text-tf-text-muted border-tf-border hover:border-tf-text"
                       )}
@@ -246,13 +281,18 @@ export default function ShoppingPage() {
                   <Search size={15} className="text-tf-text-muted shrink-0" />
                   <input
                     type="text"
+                    aria-label="Rechercher une boutique..."
                     placeholder="Rechercher une boutique..."
                     value={shopSearch}
                     onChange={(e) => setShopSearch(e.target.value)}
                     className="flex-1 bg-transparent text-body text-tf-text placeholder:text-tf-text-muted outline-none"
                   />
                   {shopSearch && (
-                    <button onClick={() => setShopSearch("")}>
+                    <button
+                      onClick={() => setShopSearch("")}
+                      aria-label="Effacer la recherche"
+                      className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold"
+                    >
                       <X size={13} className="text-tf-text-muted hover:text-tf-text" />
                     </button>
                   )}
@@ -261,6 +301,7 @@ export default function ShoppingPage() {
                 <div className="flex gap-1">
                   {SHOP_TYPES.map((t) => (
                     <button key={t.value} onClick={() => setShopType(t.value)}
+                      aria-pressed={shopType === t.value}
                       className={cn("px-3 py-1.5 rounded-full text-nav font-medium border transition-colors text-[12px]",
                         shopType === t.value ? "bg-tf-black text-white border-tf-black" : "bg-white text-tf-text-muted border-tf-border hover:border-tf-text"
                       )}
@@ -283,6 +324,7 @@ export default function ShoppingPage() {
                     {OCCASIONS.map((occ) => (
                       <button key={occ.value}
                         onClick={() => setFilters((f) => ({ ...f, occasion: f.occasion === occ.value ? undefined : occ.value, page: 1 }))}
+                        aria-pressed={filters.occasion === occ.value}
                         className={cn("px-2.5 py-1 rounded-sm text-nav border transition-colors",
                           filters.occasion === occ.value ? "bg-tf-black text-white border-tf-black" : "bg-white text-tf-text-muted border-tf-border hover:border-tf-text"
                         )}
@@ -298,6 +340,7 @@ export default function ShoppingPage() {
                     {TISSUS.map((t) => (
                       <button key={t}
                         onClick={() => setFilters((f) => ({ ...f, tissu: f.tissu?.toLowerCase() === t.toLowerCase() ? undefined : t.toLowerCase(), page: 1 }))}
+                        aria-pressed={filters.tissu?.toLowerCase() === t.toLowerCase()}
                         className={cn("px-2.5 py-1 rounded-sm text-nav border transition-colors",
                           filters.tissu?.toLowerCase() === t.toLowerCase() ? "bg-tf-black text-white border-tf-black" : "bg-white text-tf-text-muted border-tf-border hover:border-tf-text"
                         )}
@@ -316,6 +359,7 @@ export default function ShoppingPage() {
                     ].map(({ label, value }) => (
                       <button key={label}
                         onClick={() => setFilters((f) => ({ ...f, is_sur_mesure: f.is_sur_mesure === value ? undefined : value, page: 1 }))}
+                        aria-pressed={filters.is_sur_mesure === value}
                         className={cn("px-2.5 py-1 rounded-sm text-nav border transition-colors",
                           filters.is_sur_mesure === value ? "bg-tf-black text-white border-tf-black" : "bg-white text-tf-text-muted border-tf-border hover:border-tf-text"
                         )}
@@ -342,7 +386,7 @@ export default function ShoppingPage() {
         {/* ── Articles ───────────────────────────────────────────────────── */}
         {activeTab === "articles" && (
           <>
-            <p className="text-nav text-tf-text-muted mb-4">
+            <p className="text-nav text-tf-text-muted mb-4" aria-live="polite">
               {loadingProducts ? "Chargement..." : `${products?.total ?? 0} article${(products?.total ?? 0) > 1 ? "s" : ""}`}
             </p>
 
@@ -355,8 +399,8 @@ export default function ShoppingPage() {
             ) : products?.items.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <p className="font-serif text-h2 text-tf-text mb-2">Aucun article trouvé</p>
-                <p className="text-body text-tf-text-muted mb-6">Essayez d'autres filtres</p>
-                <button onClick={clearFilters} className="px-4 py-2 bg-tf-black text-white rounded-md text-btn">
+                <p className="text-body text-tf-text-muted mb-6">Essayez d&apos;autres filtres</p>
+                <button onClick={clearFilters} className="btn-primary px-4 py-2">
                   Effacer les filtres
                 </button>
               </div>
@@ -372,6 +416,8 @@ export default function ShoppingPage() {
                     {Array.from({ length: products.pages }).map((_, i) => (
                       <button key={i}
                         onClick={() => setFilters((f) => ({ ...f, page: i + 1 }))}
+                        aria-current={filters.page === i + 1 ? "page" : undefined}
+                        aria-label={`Page ${i + 1}`}
                         className={cn("w-9 h-9 rounded-md text-nav font-medium border transition-colors",
                           filters.page === i + 1 ? "bg-tf-black text-white border-tf-black" : "bg-white text-tf-text border-tf-border hover:border-tf-text"
                         )}
@@ -389,7 +435,7 @@ export default function ShoppingPage() {
         {/* ── Boutiques ──────────────────────────────────────────────────── */}
         {activeTab === "boutiques" && (
           <>
-            <p className="text-nav text-tf-text-muted mb-4">
+            <p className="text-nav text-tf-text-muted mb-4" aria-live="polite">
               {loadingShops ? "Chargement..." : `${shops?.length ?? 0} boutique${(shops?.length ?? 0) > 1 ? "s" : ""}`}
             </p>
 

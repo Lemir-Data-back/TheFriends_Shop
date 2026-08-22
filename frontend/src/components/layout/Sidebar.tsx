@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import {
   LayoutDashboard, ShoppingBag, Package, MessageCircle,
   User, Scissors, Store, LogOut, X, AlertTriangle,
-  Palette, Shield, Sparkles, ShoppingCart,
+  Shield, ShoppingCart, Archive, Settings, Home,
 } from "lucide-react"
 import { useAuthStore } from "@/store/auth"
 import { useCartStore } from "@/store/cart"
@@ -22,27 +22,31 @@ interface NavItem {
   exact?: boolean
   showIcon?: boolean  // false = pas d'icône (profil)
   badgeKey?: "cart" | "messages"
+  bottomNav?: boolean  // true = visible dans la barre mobile en bas (sinon desktop uniquement)
 }
+
+// Marqueur résolu à l'affichage vers /boutique/{id} du vendeur/couturier connecté
+const SHOP_HOME_HREF = "__SHOP_HOME__"
 
 // ── Navigation par rôle ───────────────────────────────────────────────────────
 
 const NAV_CLIENT: NavItem[] = [
-  { label: "Tableau de bord", href: "/dashboard",  icon: <LayoutDashboard size={18} />, exact: true },
+  { label: "Mon espace",      href: "/dashboard",  icon: <LayoutDashboard size={18} />, exact: true },
   { label: "Shopping",        href: "/shopping",   icon: <ShoppingBag size={18} /> },
   { label: "Panier",          href: "/panier",     icon: <ShoppingCart size={18} />, badgeKey: "cart" },
-  { label: "Looks",           href: "/looks",      icon: <Sparkles size={18} /> },
   { label: "Mes commandes",   href: "/commandes",  icon: <Package size={18} /> },
   { label: "Messages",        href: "/messages",   icon: <MessageCircle size={18} />, badgeKey: "messages" },
   { label: "Mon profil",      href: "/profil",     icon: <User size={18} />, showIcon: false },
 ]
 
 const NAV_COUTURIER: NavItem[] = [
-  { label: "Mon atelier",  href: "/dashboard/couturier", icon: <Scissors size={18} />, exact: true },
-  { label: "Shopping",     href: "/shopping",            icon: <ShoppingBag size={18} /> },
-  { label: "Looks",        href: "/looks",               icon: <Sparkles size={18} /> },
-  { label: "Commandes",    href: "/commandes",           icon: <Package size={18} /> },
-  { label: "Messages",     href: "/messages",            icon: <MessageCircle size={18} />, badgeKey: "messages" },
-  { label: "Mon profil",   href: "/profil",              icon: <User size={18} />, showIcon: false },
+  { label: "Mon atelier",  href: "/dashboard/couturier",                  icon: <Scissors size={18} />, exact: true, bottomNav: true },
+  { label: "Ma vitrine",   href: SHOP_HOME_HREF,                          icon: <Home size={18} /> },
+  { label: "Catalogue",    href: "/dashboard/couturier?tab=catalogue",    icon: <Archive size={18} />, bottomNav: true },
+  { label: "Shopping",     href: "/shopping",                             icon: <ShoppingBag size={18} />, bottomNav: true },
+  { label: "Commandes",    href: "/commandes",                            icon: <Package size={18} />, bottomNav: true },
+  { label: "Messages",     href: "/messages",                             icon: <MessageCircle size={18} />, badgeKey: "messages", bottomNav: true },
+  { label: "Paramètres",   href: "/dashboard/couturier?tab=parametres",   icon: <Settings size={18} /> },
 ]
 
 const NAV_ADMIN: NavItem[] = [
@@ -54,13 +58,13 @@ const NAV_ADMIN: NavItem[] = [
 ]
 
 const NAV_VENDEUR: NavItem[] = [
-  { label: "Ma boutique",    href: "/dashboard/vendeur",           icon: <Store size={18} />, exact: true },
-  { label: "Shopping",       href: "/shopping",                    icon: <ShoppingBag size={18} /> },
-  { label: "Looks",          href: "/looks",                       icon: <Sparkles size={18} /> },
-  { label: "Commandes",      href: "/commandes",                   icon: <Package size={18} /> },
-  { label: "Messages",       href: "/messages",                    icon: <MessageCircle size={18} />, badgeKey: "messages" },
-  { label: "Thème boutique", href: "/dashboard/vendeur?tab=theme", icon: <Palette size={18} /> },
-  { label: "Mon profil",     href: "/profil",                      icon: <User size={18} />, showIcon: false },
+  { label: "Ma boutique",         href: "/dashboard/vendeur",                icon: <Store size={18} />, exact: true, bottomNav: true },
+  { label: "Ma vitrine",          href: SHOP_HOME_HREF,                      icon: <Home size={18} /> },
+  { label: "Stock et catalogue",  href: "/dashboard/vendeur?tab=catalogue",  icon: <Archive size={18} />, bottomNav: true },
+  { label: "Shopping",            href: "/shopping",                         icon: <ShoppingBag size={18} />, bottomNav: true },
+  { label: "Commandes",           href: "/commandes",                        icon: <Package size={18} />, bottomNav: true },
+  { label: "Messages",            href: "/messages",                         icon: <MessageCircle size={18} />, badgeKey: "messages", bottomNav: true },
+  { label: "Paramètres",          href: "/dashboard/vendeur?tab=parametres", icon: <Settings size={18} /> },
 ]
 
 function getNav(role?: string): NavItem[] {
@@ -70,9 +74,29 @@ function getNav(role?: string): NavItem[] {
   return NAV_CLIENT
 }
 
+// Les items "Catalogue"/"Paramètres" pointent vers la même page que l'item racine
+// (ex. "Mon atelier") avec un ?tab= différent — usePathname() seul ne voit pas le tab,
+// donc on compare aussi le paramètre courant pour savoir lequel est réellement actif.
+function isItemActive(item: NavItem, pathname: string, currentTab: string | null, nav: NavItem[]): boolean {
+  if (item.href.includes("?tab=")) {
+    const [base, query] = item.href.split("?")
+    return pathname === base && currentTab === new URLSearchParams(query).get("tab")
+  }
+  if (item.exact) {
+    if (pathname !== item.href) return false
+    // Actif par défaut (ex. onglet "Clients", qui n'a pas son propre lien) — sauf si
+    // le tab courant est explicitement revendiqué par un autre item (Catalogue, Paramètres...).
+    const claimedTabs = nav
+      .filter((i) => i.href.startsWith(`${item.href}?tab=`))
+      .map((i) => new URLSearchParams(i.href.split("?")[1]).get("tab"))
+    return !currentTab || !claimedTabs.includes(currentTab)
+  }
+  return pathname.startsWith(item.href)
+}
+
 // ── Déconnexion confirmation ───────────────────────────────────────────────────
 
-function LogoutModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
+export function LogoutModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
@@ -116,16 +140,17 @@ function useBadgeCounts() {
     select: (data) => data,
   })
 
-  const messagesCount = conversations?.reduce((sum, c: any) => sum + (c.nb_non_lus ?? 0), 0) ?? 0
+  const messagesCount = conversations?.reduce((sum, c: { nb_non_lus?: number }) => sum + (c.nb_non_lus ?? 0), 0) ?? 0
 
   return { cart: cartCount, messages: messagesCount }
 }
 
 // ── Item de navigation ────────────────────────────────────────────────────────
 
-function NavLink({ item, badges }: { item: NavItem; badges: Record<string, number> }) {
+function NavLink({ item, badges, nav }: { item: NavItem; badges: Record<string, number>; nav: NavItem[] }) {
   const pathname = usePathname()
-  const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+  const searchParams = useSearchParams()
+  const active = isItemActive(item, pathname, searchParams.get("tab"), nav)
   const showIcon = item.showIcon !== false
   const badgeCount = item.badgeKey ? badges[item.badgeKey] ?? 0 : 0
 
@@ -170,9 +195,17 @@ export function Sidebar() {
   const [showLogout, setShowLogout] = useState(false)
   const badges = useBadgeCounts()
 
+  const { data: myShop } = useQuery<{ id: number }>({
+    queryKey: ["my-shop"],
+    queryFn: async () => (await api.get("/shops/me/shop")).data,
+    enabled: user?.role === "couturier" || user?.role === "vendeur",
+  })
+
   if (!_hasHydrated || !user) return null
 
-  const nav = getNav(user.role)
+  const nav = getNav(user.role).map((item) =>
+    item.href === SHOP_HOME_HREF && myShop ? { ...item, href: `/boutique/${myShop.id}` } : item
+  )
 
   function handleLogout() { logout(); router.push("/") }
 
@@ -208,7 +241,7 @@ export function Sidebar() {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
           {nav.map((item) => (
-            <NavLink key={item.href} item={item} badges={badges} />
+            <NavLink key={item.href} item={item} badges={badges} nav={nav} />
           ))}
         </nav>
 
@@ -230,28 +263,19 @@ export function Sidebar() {
 // ── Bottom nav mobile ─────────────────────────────────────────────────────────
 
 export function BottomNav() {
-  const { user, logout, _hasHydrated } = useAuthStore()
+  const { user, _hasHydrated } = useAuthStore()
   const pathname = usePathname()
-  const router = useRouter()
-  const [showLogout, setShowLogout] = useState(false)
   const badges = useBadgeCounts()
 
   if (!_hasHydrated || !user) return null
 
-  // Max 4 items (sans profil) + bouton déco
-  const nav = getNav(user.role).filter(i => i.href !== "/profil").slice(0, 4)
-
-  function handleLogout() { logout(); router.push("/") }
+  const nav = getNav(user.role).filter(i => i.bottomNav)
 
   return (
-    <>
-      {showLogout && <LogoutModal onConfirm={handleLogout} onCancel={() => setShowLogout(false)} />}
-
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-tf-border flex items-stretch h-16">
-        {nav.map((item) => {
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-tf-border flex items-stretch h-16">
+      {nav.map((item) => {
           const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
           const badgeCount = item.badgeKey ? badges[item.badgeKey] ?? 0 : 0
-          const showIcon = item.showIcon !== false
 
           return (
             <Link
@@ -270,23 +294,13 @@ export function BottomNav() {
                   </span>
                 )}
               </div>
-              <span className="font-sans text-[9px] font-semibold truncate max-w-[52px] text-center leading-tight">
-                {item.label.split(" ")[0]}
+              <span className="font-sans text-[8px] font-semibold text-center leading-tight px-0.5">
+                {item.label}
               </span>
               {active && <span className="absolute bottom-0 w-8 h-0.5 bg-tf-gold rounded-full" />}
             </Link>
           )
         })}
-
-        {/* Déco */}
-        <button
-          onClick={() => setShowLogout(true)}
-          className="flex-1 flex flex-col items-center justify-center gap-0.5 text-tf-text-muted hover:text-[#C0392B] transition-colors"
-        >
-          <LogOut size={18} />
-          <span className="font-sans text-[9px] font-semibold">Quitter</span>
-        </button>
-      </nav>
-    </>
+    </nav>
   )
 }

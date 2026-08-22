@@ -1,15 +1,18 @@
 "use client";
 
-import { X, Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
+import { X, Trash2, Plus, Minus, ShoppingBag, LogIn } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCartStore } from "@/store/cart";
 import { useCart } from "@/hooks/useCart";
+import { useAuthStore } from "@/store/auth";
 import { formatPrix } from "@/lib/utils";
 
 export function CartDrawer() {
   const { isOpen, closeCart } = useCartStore();
   const { cart, isLoading, updateItem, removeItem } = useCart();
+  const { user } = useAuthStore();
+  const isSeller = user?.role === "couturier" || user?.role === "vendeur";
 
   return (
     <>
@@ -21,14 +24,25 @@ export function CartDrawer() {
         />
       )}
 
-      {/* Drawer */}
+      {/* Drawer — glisse depuis la droite sur desktop, depuis le bas sur mobile */}
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed z-50 bg-white flex flex-col shadow-2xl transition-transform duration-300 ease-in-out
+          inset-x-0 bottom-0 h-[85vh] rounded-t-2xl
+          sm:top-0 sm:right-0 sm:left-auto sm:bottom-auto sm:h-full sm:w-full sm:max-w-sm sm:rounded-none
+          ${isOpen ? "translate-y-0 sm:translate-x-0" : "translate-y-full sm:translate-y-0 sm:translate-x-full"}
+        `}
       >
+        {/* Poignée de fermeture — mobile uniquement */}
+        <div className="sm:hidden flex justify-center pt-2.5 pb-1 shrink-0">
+          <button
+            onClick={closeCart}
+            aria-label="Fermer le panier"
+            className="w-10 h-1.5 rounded-full bg-tf-border"
+          />
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-tf-border">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-tf-border shrink-0">
           <div className="flex items-center gap-2">
             <ShoppingBag size={18} className="text-tf-black" />
             <span className="font-sans font-semibold text-[15px] text-tf-text">
@@ -40,14 +54,29 @@ export function CartDrawer() {
               </span>
             )}
           </div>
-          <button onClick={closeCart} className="text-tf-text-muted hover:text-tf-text transition-colors">
+          <button onClick={closeCart} aria-label="Fermer le panier" className="hidden sm:block text-tf-text-muted hover:text-tf-text transition-colors">
             <X size={20} />
           </button>
         </div>
 
         {/* Contenu */}
         <div className="flex-1 overflow-y-auto">
-          {isLoading ? (
+          {isSeller ? (
+            <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+              <LogIn size={48} className="text-tf-border mb-4" />
+              <p className="font-sans text-[15px] font-medium text-tf-text mb-1">Aperçu vendeur</p>
+              <p className="font-sans text-[13px] text-tf-text-muted mb-6">
+                Connecte-toi avec un compte client pour utiliser le panier.
+              </p>
+              <Link
+                href="/auth/login"
+                onClick={closeCart}
+                className="px-5 py-2.5 bg-tf-gold text-tf-black rounded-md font-sans font-bold text-[13px] hover:bg-tf-gold-light transition-colors"
+              >
+                Se connecter
+              </Link>
+            </div>
+          ) : isLoading ? (
             <div className="p-5 space-y-4">
               {[1, 2].map((i) => (
                 <div key={i} className="h-20 bg-tf-gray-soft rounded-lg animate-pulse" />
@@ -153,20 +182,29 @@ export function CartDrawer() {
 
         {/* Footer total + CTA */}
         {cart && cart.nb_articles > 0 && (
-          <div className="border-t border-tf-border p-5 space-y-3">
+          <div className="border-t border-tf-border p-5 space-y-3 shrink-0">
             <div className="flex items-center justify-between">
               <span className="font-sans text-[14px] font-semibold text-tf-text">Total</span>
-              <span className="font-serif text-[18px] font-bold text-tf-black">
+              <span className="font-mono text-[18px] font-bold text-tf-black">
                 {formatPrix(cart.total)}
               </span>
             </div>
-            <Link
-              href="/panier"
-              onClick={closeCart}
-              className="block w-full text-center py-3 bg-tf-gold text-tf-black rounded-md font-sans font-bold text-[14px] hover:bg-tf-gold-light transition-colors"
-            >
-              Voir mon panier
-            </Link>
+            <div className="flex gap-2">
+              <Link
+                href="/panier"
+                onClick={closeCart}
+                className="flex-1 text-center py-3 border border-tf-border rounded-md font-sans font-bold text-[13px] text-tf-text hover:border-tf-gold transition-colors"
+              >
+                Voir le panier
+              </Link>
+              <Link
+                href="/panier"
+                onClick={closeCart}
+                className="flex-1 text-center py-3 bg-tf-gold text-tf-black rounded-md font-sans font-bold text-[13px] hover:bg-tf-gold-light transition-colors"
+              >
+                Passer ma commande
+              </Link>
+            </div>
           </div>
         )}
       </div>

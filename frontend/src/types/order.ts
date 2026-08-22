@@ -12,6 +12,17 @@ export type OrderStatut =
 export type EscrowStatut = "en_attente" | "bloque" | "libere" | "rembourse" | "litige";
 export type OrderType = "pret_a_porter" | "sur_mesure";
 
+export type NegociationAuteur = "client" | "shop";
+export type NegociationAction = "proposer" | "contre" | "accepter" | "refuser";
+
+export interface NegociationEntry {
+  auteur: NegociationAuteur;
+  action: NegociationAction;
+  prix: number | null;
+  message: string | null;
+  created_at: string;
+}
+
 export interface OrderItem {
   product_id: number;
   titre: string;
@@ -30,6 +41,14 @@ export interface AdresseLivraison {
   details?: string;
 }
 
+export interface OrderClientInfo {
+  id: number;
+  full_name: string;
+  phone: string | null;
+  mensurations: Record<string, number> | null;
+  score_confiance: number;
+}
+
 export interface Order {
   id: number;
   reference: string;
@@ -46,6 +65,9 @@ export interface Order {
   note_vendeur: string | null;
   shop_id: number;
   client_id: number;
+  client: OrderClientInfo | null;
+  negociations: NegociationEntry[];
+  delai_confection_jours: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -70,13 +92,13 @@ export const STATUT_LABELS: Record<OrderStatut, string> = {
 };
 
 export const STATUT_COLORS: Record<OrderStatut, string> = {
-  en_attente: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  acceptee: "bg-blue-50 text-blue-700 border-blue-200",
-  en_cours: "bg-blue-50 text-blue-700 border-blue-200",
-  expedie: "bg-purple-50 text-purple-700 border-purple-200",
-  livre: "bg-orange-50 text-orange-700 border-orange-200",
-  confirme: "bg-green-50 text-green-700 border-green-200",
-  litige: "bg-red-50 text-red-700 border-red-200",
-  annule: "bg-gray-50 text-gray-500 border-gray-200",
-  rembourse: "bg-gray-50 text-gray-500 border-gray-200",
+  en_attente: "bg-tf-warning-bg text-tf-warning border-tf-warning",
+  acceptee: "bg-tf-info-bg text-tf-info border-tf-info",
+  en_cours: "bg-tf-info-bg text-tf-info border-tf-info",
+  expedie: "bg-tf-info-bg text-tf-info border-tf-info",
+  livre: "bg-tf-warning-bg text-tf-warning border-tf-warning",
+  confirme: "bg-tf-success-bg text-tf-success border-tf-success",
+  litige: "bg-tf-error-bg text-tf-error border-tf-error",
+  annule: "bg-tf-gray-soft text-tf-text-muted border-tf-border",
+  rembourse: "bg-tf-gray-soft text-tf-text-muted border-tf-border",
 };

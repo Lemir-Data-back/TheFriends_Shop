@@ -11,5 +11,6 @@ export interface Shop {
   badges?: Record<string, boolean>;
   score_delais: number;
   score_qualite: number;
+  score_communication?: number;
   nb_avis: number;
 }

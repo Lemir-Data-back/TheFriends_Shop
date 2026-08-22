@@ -4,11 +4,11 @@ import { useParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
-import { MapPin, Star, Package, ChevronLeft, CheckCircle, MessageCircle } from "lucide-react"
+import { MapPin, Star, Package, CheckCircle, MessageCircle } from "lucide-react"
 import { api } from "@/lib/api"
 import { ProductCard } from "@/components/product/ProductCard"
 import { cn } from "@/lib/utils"
-import { ShopThemeProvider, useThemeContext } from "@/features/shop-theming/ThemeProvider"
+import { useThemeContext } from "@/features/shop-theming/ThemeProvider"
 import type { Shop } from "@/types/shop"
 import type { ProductListResponse } from "@/types/product"
 
@@ -38,7 +38,7 @@ function ScoreBarItem({ label, score }: { label: string; score: number }) {
           />
         ))}
       </div>
-      <span className="text-nav font-bold tabular-nums text-tf-text">{score.toFixed(1)}</span>
+      <span className="font-mono text-nav font-bold tabular-nums text-tf-text">{score.toFixed(1)}</span>
     </div>
   )
 }
@@ -90,15 +90,6 @@ function BoutiqueContent({ shopId }: { shopId: string }) {
       {/* Hero boutique */}
       <div style={{ backgroundColor: theme.couleur_secondaire }} className="relative overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
-          <Link
-            href="/shopping"
-            className="inline-flex items-center gap-1 text-nav mb-6 transition-colors hover:opacity-80"
-            style={{ color: `${theme.couleur_principale}99` }}
-          >
-            <ChevronLeft size={14} />
-            Catalogue
-          </Link>
-
           <div className="flex items-center gap-4">
             {/* Avatar */}
             <div
@@ -244,8 +235,9 @@ function BoutiqueContent({ shopId }: { shopId: string }) {
       )}
 
       {/* Catalogue */}
-      <main
-        className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6"
+      <div
+        id="catalogue"
+        className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 scroll-mt-24"
         style={{ backgroundColor: theme.couleur_fond }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -277,7 +269,7 @@ function BoutiqueContent({ shopId }: { shopId: string }) {
             >
               Aucun article pour le moment
             </p>
-            <p className="text-body text-tf-text-muted">Cette boutique n'a pas encore publié d'articles.</p>
+            <p className="text-body text-tf-text-muted">Cette boutique n&apos;a pas encore publié d&apos;articles.</p>
           </div>
         ) : (
           <div className={`grid ${gridClass} gap-3 sm:gap-4`}>
@@ -286,19 +278,14 @@ function BoutiqueContent({ shopId }: { shopId: string }) {
             ))}
           </div>
         )}
-      </main>
+      </div>
     </div>
   )
 }
 
-// ── Page principale avec ThemeProvider ───────────────────────────────────────
+// ── Page principale — le thème est déjà appliqué par boutique/[id]/layout.tsx ─
 
 export default function BoutiquePage() {
   const { id } = useParams<{ id: string }>()
-
-  return (
-    <ShopThemeProvider shopId={Number(id)}>
-      <BoutiqueContent shopId={id} />
-    </ShopThemeProvider>
-  )
+  return <BoutiqueContent shopId={id} />
 }

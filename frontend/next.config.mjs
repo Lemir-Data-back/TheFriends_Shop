@@ -53,6 +53,8 @@ const nextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
     ],
   },
+  // Recharts 3.x est ESM pur — Next.js doit le transpiler
+  transpilePackages: ["recharts", "victory-vendor"],
   // Optimisation pour les réseaux lents (Côte d'Ivoire)
   compress: true,
   poweredByHeader: false,

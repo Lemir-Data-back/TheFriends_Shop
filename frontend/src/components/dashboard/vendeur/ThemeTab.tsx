@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, EyeOff, RefreshCw, Sparkles } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import {
   useShopThemeDraft,
   useUpdateShopTheme,
@@ -101,7 +101,8 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
                   couleur_texte: p.couleur_texte,
                   couleur_secondaire: p.couleur_secondaire,
                 })}
-                className="flex items-center gap-2 p-2.5 border border-tf-border rounded-lg hover:border-[rgba(201,168,76,0.5)] transition-colors text-left"
+                aria-pressed={theme.couleur_principale === p.couleur_principale && theme.couleur_fond === p.couleur_fond}
+                className="flex items-center gap-2 p-2.5 border border-tf-border rounded-lg hover:border-[rgba(201,168,76,0.5)] transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold"
               >
                 <div className="flex gap-1 shrink-0">
                   <div className="w-4 h-8 rounded-sm" style={{ backgroundColor: p.couleur_secondaire }} />
@@ -150,8 +151,9 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
                     <button
                       key={f}
                       onClick={() => update({ [key]: f })}
+                      aria-pressed={theme[key] === f}
                       style={{ fontFamily: `'${f}', serif` }}
-                      className={`px-3 py-1.5 rounded-lg border text-[13px] transition-colors ${
+                      className={`px-3 py-1.5 rounded-lg border text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                         theme[key] === f
                           ? "border-tf-black bg-tf-black text-white"
                           : "border-tf-border text-tf-text hover:border-tf-gold"
@@ -198,6 +200,31 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
           </div>
         </div>
 
+        {/* Contact */}
+        <div className="bg-white rounded-xl border border-tf-border p-5">
+          <h3 className="font-sans text-[13px] font-bold text-tf-text mb-3">Contact</h3>
+          <div className="space-y-3">
+            {[
+              { label: "Téléphone",  key: "telephone_contact" as const, placeholder: "+225 07 00 00 00 00" },
+              { label: "WhatsApp",   key: "whatsapp"           as const, placeholder: "+225 07 00 00 00 00" },
+              { label: "Instagram",  key: "instagram"          as const, placeholder: "@ma_boutique" },
+              { label: "TikTok",     key: "tiktok"             as const, placeholder: "@ma_boutique" },
+              { label: "Horaires",   key: "horaires"           as const, placeholder: "Lun–Sam, 9h–19h" },
+            ].map(({ label, key, placeholder }) => (
+              <div key={key}>
+                <label className="font-sans text-[12px] font-semibold text-tf-text block mb-1">{label}</label>
+                <input
+                  type="text"
+                  value={(theme[key] as string) ?? ""}
+                  onChange={(e) => update({ [key]: e.target.value })}
+                  placeholder={placeholder}
+                  className="w-full px-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-[rgba(201,168,76,0.2)]"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Disposition */}
         <div className="bg-white rounded-xl border border-tf-border p-5">
           <h3 className="font-sans text-[13px] font-bold text-tf-text mb-3">Disposition</h3>
@@ -212,8 +239,9 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
                 ].map((s) => (
                   <button
                     key={s.id}
-                    onClick={() => update({ layout_config: { ...theme.layout_config, hero_style: s.id as any } })}
-                    className={`flex-1 px-2 py-2 rounded-lg border text-[12px] font-semibold transition-colors ${
+                    onClick={() => update({ layout_config: { ...theme.layout_config, hero_style: s.id as "full" | "split" | "minimal" } })}
+                    aria-pressed={theme.layout_config?.hero_style === s.id}
+                    className={`flex-1 px-2 py-2 rounded-lg border text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                       theme.layout_config?.hero_style === s.id
                         ? "border-tf-black bg-tf-black text-white"
                         : "border-tf-border text-tf-text hover:border-tf-gold"
@@ -234,8 +262,9 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
                 ].map((g) => (
                   <button
                     key={g.id}
-                    onClick={() => update({ layout_config: { ...theme.layout_config, grid_style: g.id as any } })}
-                    className={`flex-1 px-2 py-2 rounded-lg border text-[12px] font-semibold transition-colors ${
+                    onClick={() => update({ layout_config: { ...theme.layout_config, grid_style: g.id as "2col" | "3col" | "masonry" } })}
+                    aria-pressed={theme.layout_config?.grid_style === g.id}
+                    className={`flex-1 px-2 py-2 rounded-lg border text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                       theme.layout_config?.grid_style === g.id
                         ? "border-tf-black bg-tf-black text-white"
                         : "border-tf-border text-tf-text hover:border-tf-gold"
@@ -275,7 +304,7 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
         </div>
 
         {draft?.is_published && (
-          <p className="font-sans text-[12px] text-[#2D6A4F] text-center">
+          <p className="font-sans text-[12px] text-tf-success text-center">
             ✓ Thème actuellement publié — visible par tes visiteurs
           </p>
         )}

@@ -106,8 +106,8 @@ export function useOrderInstallment(orderId: number) {
       const { data } = await api.get<OrderInstallment>(`/installments/orders/${orderId}`)
       return data
     },
-    refetchInterval: (data) =>
-      data?.statut === "en_cours" ? 30_000 : false,
+    refetchInterval: (query) =>
+      query.state.data?.statut === "en_cours" ? 30_000 : false,
   })
 }
 

@@ -1,5 +1,6 @@
 export type ProductCategorie = "homme" | "femme" | "enfant";
 export type ProductOccasion = "casual" | "bureau" | "ceremonie" | "traditionnel" | "sport" | "mariage";
+export type StockStatut = "rupture" | "stock_faible";
 
 export interface ProductImage {
   id: number;
@@ -23,6 +24,11 @@ export interface Product {
   tailles_guide?: Record<string, Record<string, string>>;
   tags?: string[];
   is_sur_mesure: boolean;
+  prix_plancher_negociation?: number;
+  mensurations_ref?: Record<string, string>;
+  seuil_stock_faible?: number;
+  stock_total?: number | null;
+  stock_statut?: StockStatut | null;
   actif: boolean;
   nb_vues: number;
   nb_likes: number;
@@ -43,6 +49,7 @@ export interface ProductListItem {
   tags?: string[];
   is_sur_mesure: boolean;
   nb_likes: number;
+  stock_statut?: StockStatut | null;
   images: ProductImage[];
 }
 
