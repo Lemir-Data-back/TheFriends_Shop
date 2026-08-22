@@ -31,10 +31,10 @@ interface CouturierClientsData {
 }
 
 const STATUT_BADGE: Record<string, string> = {
-  premium:   "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark",
-  fiable:    "bg-[#D8F3DC] text-[#2D6A4F]",
+  premium:   "bg-tf-gold/[0.15] text-tf-gold-dark",
+  fiable:    "bg-tf-success-bg text-tf-success",
   standard:  "bg-tf-gray-soft text-tf-text-muted",
-  surveille: "bg-[#FFCCCC] text-[#C0392B]",
+  surveille: "bg-tf-error-bg text-tf-error",
 }
 const STATUT_LABELS: Record<string, string> = {
   premium: "Premium", fiable: "Fiable", standard: "Standard", surveille: "Surveillé",
@@ -74,11 +74,11 @@ export function CouturierClientsTab() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: "Clients total",        value: data.total_clients,              icon: <Users size={16} className="text-tf-gold" /> },
-          { label: "Commandes en attente", value: data.clients_en_attente.length,  icon: <Clock size={16} className="text-[#B8892A]" />, warn: data.clients_en_attente.some(c => c.statut === "surveille") },
+          { label: "Commandes en attente", value: data.clients_en_attente.length,  icon: <Clock size={16} className="text-tf-warning" />, warn: data.clients_en_attente.some(c => c.statut === "surveille") },
           { label: "Inactifs 60j+",        value: data.clients_inactifs.length,    icon: <TrendingUp size={16} className="text-tf-text-muted" /> },
-          { label: "Clients réguliers",    value: data.top_clients.filter(c => c.nb_commandes >= 2).length, icon: <TrendingUp size={16} className="text-[#2D6A4F]" /> },
+          { label: "Clients réguliers",    value: data.top_clients.filter(c => c.nb_commandes >= 2).length, icon: <TrendingUp size={16} className="text-tf-success" /> },
         ].map(({ label, value, icon, warn }) => (
-          <div key={label} className={`bg-white rounded-xl border p-4 ${warn ? "border-[rgba(192,57,43,0.4)]" : "border-tf-border"}`}>
+          <div key={label} className={`bg-white rounded-xl border p-4 ${warn ? "border-tf-error/40" : "border-tf-border"}`}>
             <div className="flex items-center gap-1.5 mb-1.5">{icon}
               <span className="font-sans text-[11px] text-tf-text-muted">{label}</span>
             </div>
@@ -158,7 +158,7 @@ export function CouturierClientsTab() {
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-[12px] text-tf-text-muted">
-                    <span>Score : <strong className={c.score_confiance < 2.5 ? "text-[#C0392B]" : "text-[#2D6A4F]"}>{c.score_confiance}/5</strong></span>
+                    <span>Score : <strong className={c.score_confiance < 2.5 ? "text-tf-error" : "text-tf-success"}>{c.score_confiance}/5</strong></span>
                     <span>{c.nb_commandes} commande(s) passée(s)</span>
                   </div>
                   {c.mensurations && (
@@ -171,7 +171,7 @@ export function CouturierClientsTab() {
                     </div>
                   )}
                   {c.statut === "surveille" && (
-                    <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#C0392B]">
+                    <div className="mt-2 flex items-center gap-1.5 text-[11px] text-tf-error">
                       <AlertTriangle size={11} />
                       Client surveillé — historique d&apos;annulations ou comportement signalé
                     </div>
@@ -187,7 +187,7 @@ export function CouturierClientsTab() {
           <div className="divide-y divide-tf-border">
             {!data.clients_inactifs.length ? (
               <div className="p-8 text-center">
-                <p className="font-sans text-[14px] font-medium text-[#2D6A4F]">Aucun client inactif 🎉</p>
+                <p className="font-sans text-[14px] font-medium text-tf-success">Aucun client inactif 🎉</p>
               </div>
             ) : data.clients_inactifs.map((c) => {
               const jours = Math.floor(
@@ -198,7 +198,7 @@ export function CouturierClientsTab() {
                   <div>
                     <p className="font-sans text-[13px] font-semibold text-tf-text">{c.nom}</p>
                     <p className="font-sans text-[11px] text-tf-text-muted">
-                      {c.nb_commandes} commande(s) · dernière il y a <span className="font-semibold text-[#B8892A]">{jours} jours</span>
+                      {c.nb_commandes} commande(s) · dernière il y a <span className="font-semibold text-tf-warning">{jours} jours</span>
                     </p>
                   </div>
                   <Link
@@ -219,20 +219,20 @@ export function CouturierClientsTab() {
         <div className="px-5 py-4 border-b border-tf-border flex items-center gap-2">
           <Sparkles size={15} className="text-tf-gold" />
           <h3 className="font-sans text-[14px] font-bold text-tf-text">Clients cherchant des créations précises</h3>
-          <span className="ml-auto text-[10px] px-2 py-0.5 bg-[rgba(201,168,76,0.12)] text-tf-gold-dark rounded-full font-bold">IA</span>
+          <span className="ml-auto text-[10px] px-2 py-0.5 bg-tf-gold/[0.12] text-tf-gold-dark rounded-full font-bold">IA</span>
         </div>
         <div className="p-5 space-y-3">
           {[
             { client: "Nadia S.", recherche: "robe wax bicolore cérémonie", match: true },
             { client: "Adjoua K.", recherche: "boubou brodé homme grande taille", match: false },
           ].map((s, i) => (
-            <div key={i} className="flex items-start justify-between gap-4 p-3 bg-[rgba(201,168,76,0.04)] border border-[rgba(201,168,76,0.2)] rounded-lg">
+            <div key={i} className="flex items-start justify-between gap-4 p-3 bg-tf-gold/[0.04] border border-tf-gold/20 rounded-lg">
               <div>
                 <p className="font-sans text-[13px] font-semibold text-tf-text">
                   <span className="text-tf-gold">{s.client}</span> cherche : <span className="italic">&ldquo;{s.recherche}&rdquo;</span>
                 </p>
                 {s.match
-                  ? <p className="font-sans text-[12px] text-[#2D6A4F] mt-0.5">✓ Tu as un modèle correspondant dans ton catalogue</p>
+                  ? <p className="font-sans text-[12px] text-tf-success mt-0.5">✓ Tu as un modèle correspondant dans ton catalogue</p>
                   : <p className="font-sans text-[12px] text-tf-text-muted mt-0.5">Aucune correspondance — opportunité de nouvelle création</p>
                 }
               </div>

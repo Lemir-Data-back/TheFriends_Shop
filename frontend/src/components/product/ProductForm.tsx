@@ -228,12 +228,12 @@ export function ProductForm({ mode, productId }: { mode: "create" | "edit"; prod
             <>
               {existing?.images.map((img) => (
                 <div key={img.id} className="relative aspect-[3/4] rounded-lg overflow-hidden bg-tf-gray-soft group">
-                  <Image src={img.url_cloudinary} alt="" fill className="object-cover" />
+                  <Image src={img.url_cloudinary} alt="" fill sizes="(max-width: 640px) 33vw, 25vw" className="object-cover" />
                   <button
                     type="button"
                     onClick={() => deleteImage.mutate(img.id)}
                     aria-label="Supprimer cette photo"
-                    className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity before:absolute before:-inset-2 before:content-['']"
                   >
                     <Trash2 size={12} />
                   </button>
@@ -251,12 +251,12 @@ export function ProductForm({ mode, productId }: { mode: "create" | "edit"; prod
             <>
               {stagedFiles.map((staged, i) => (
                 <div key={staged.url} className="relative aspect-[3/4] rounded-lg overflow-hidden bg-tf-gray-soft group">
-                  <Image src={staged.url} alt="" fill className="object-cover" />
+                  <Image src={staged.url} alt="" fill sizes="(max-width: 640px) 33vw, 25vw" className="object-cover" />
                   <button
                     type="button"
                     onClick={() => removeStagedFile(i)}
                     aria-label="Retirer cette photo"
-                    className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity before:absolute before:-inset-2 before:content-['']"
                   >
                     <Trash2 size={12} />
                   </button>

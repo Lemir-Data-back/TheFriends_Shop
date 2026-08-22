@@ -22,10 +22,10 @@ export default function Home() {
           </p>
         </div>
 
-        <p className="font-serif text-h2 text-white/80 leading-relaxed mb-10">
+        <h1 className="font-serif text-h2 text-white/80 leading-relaxed mb-10 font-normal">
           Le centre commercial en ligne.<br />
           <span className="whitespace-nowrap">La mode en ligne.</span>
-        </p>
+        </h1>
         
 
         <div className="flex flex-col sm:flex-row gap-3">
@@ -50,7 +50,7 @@ export default function Home() {
 
       {/* CTA final */}
       <section className="bg-tf-black py-16 text-center px-4">
-        <p className="font-serif text-h1 text-white mb-6">Ta mode, ton style.</p>
+        <h2 className="font-serif text-h1 text-white mb-6 font-normal">Ta mode, ton style.</h2>
         <Link
           href="/shopping"
           className="btn-gold inline-flex items-center gap-2 px-8 py-4"

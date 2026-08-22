@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Users, TrendingUp, Clock, Sparkles, ArrowRight } from "lucide-react"
 import { api } from "@/lib/api"
 import { formatPrix } from "@/lib/utils"
+import { ProgressBar } from "@/components/ui/ProgressBar"
 
 interface ClientSummary {
   client_id: number
@@ -26,22 +27,20 @@ interface ClientsData {
 }
 
 const STATUT_BADGE: Record<string, string> = {
-  premium:   "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark",
-  fiable:    "bg-[#D8F3DC] text-[#2D6A4F]",
+  premium:   "bg-tf-gold/[0.15] text-tf-gold-dark",
+  fiable:    "bg-tf-success-bg text-tf-success",
   standard:  "bg-tf-gray-soft text-tf-text-muted",
-  surveille: "bg-[#FFCCCC] text-[#C0392B]",
+  surveille: "bg-tf-error-bg text-tf-error",
 }
 const STATUT_LABELS: Record<string, string> = {
   premium: "Premium", fiable: "Fiable", standard: "Standard", surveille: "Surveillé",
 }
 
 function ScoreBar({ score }: { score: number }) {
-  const color = score >= 4.5 ? "#C9A84C" : score >= 3.5 ? "#2D6A4F" : score >= 2.5 ? "#7A766F" : "#C0392B"
+  const color = score >= 4.5 ? "var(--tf-gold)" : score >= 3.5 ? "var(--tf-success)" : score >= 2.5 ? "var(--tf-text-muted)" : "var(--tf-error)"
   return (
     <div className="flex items-center gap-1.5">
-      <div className="w-16 h-1.5 bg-tf-gray-soft rounded-full overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: `${(score / 5) * 100}%`, backgroundColor: color }} />
-      </div>
+      <ProgressBar value={(score / 5) * 100} color={color} trackClassName="w-16 h-1.5" />
       <span className="font-mono text-[11px] font-bold tabular-nums" style={{ color }}>{score.toFixed(1)}</span>
     </div>
   )
@@ -86,8 +85,8 @@ export function VendeurClientsTab() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: "Clients total", value: data.total_clients, icon: <Users size={16} className="text-tf-gold" /> },
-          { label: "Clients fidèles", value: data.total_fideles, icon: <TrendingUp size={16} className="text-[#2D6A4F]" /> },
-          { label: "Inactifs 30j+", value: data.clients_inactifs.length, icon: <Clock size={16} className="text-[#B8892A]" /> },
+          { label: "Clients fidèles", value: data.total_fideles, icon: <TrendingUp size={16} className="text-tf-success" /> },
+          { label: "Inactifs 30j+", value: data.clients_inactifs.length, icon: <Clock size={16} className="text-tf-warning" /> },
           {
             label: "Panier moyen",
             value: formatPrix(
@@ -130,19 +129,20 @@ export function VendeurClientsTab() {
 
         {view === "classement" && (
           <div>
-            {/* En-tête tableau */}
-            <div className="grid grid-cols-12 gap-2 px-5 py-2.5 bg-tf-bg border-b border-tf-border">
-              <span className="col-span-1 font-sans text-[10px] font-bold text-tf-text-muted uppercase">#</span>
-              <span className="col-span-3 font-sans text-[10px] font-bold text-tf-text-muted uppercase">Client</span>
-              <span className="col-span-2 font-sans text-[10px] font-bold text-tf-text-muted uppercase text-right">Commandes</span>
-              <span className="col-span-2 font-sans text-[10px] font-bold text-tf-text-muted uppercase text-right">CA total</span>
-              <span className="col-span-2 font-sans text-[10px] font-bold text-tf-text-muted uppercase text-right">Panier moy.</span>
-              <span className="col-span-2 font-sans text-[10px] font-bold text-tf-text-muted uppercase text-right">Score</span>
-            </div>
-
             {!data.top_clients.length ? (
               <EmptyState />
             ) : (
+              <div className="overflow-x-auto">
+              <div className="min-w-[640px]">
+              {/* En-tête tableau */}
+              <div className="grid grid-cols-12 gap-2 px-5 py-2.5 bg-tf-bg border-b border-tf-border">
+                <span className="col-span-1 font-sans text-[10px] font-bold text-tf-text-muted uppercase">#</span>
+                <span className="col-span-3 font-sans text-[10px] font-bold text-tf-text-muted uppercase">Client</span>
+                <span className="col-span-2 font-sans text-[10px] font-bold text-tf-text-muted uppercase text-right">Commandes</span>
+                <span className="col-span-2 font-sans text-[10px] font-bold text-tf-text-muted uppercase text-right">CA total</span>
+                <span className="col-span-2 font-sans text-[10px] font-bold text-tf-text-muted uppercase text-right">Panier moy.</span>
+                <span className="col-span-2 font-sans text-[10px] font-bold text-tf-text-muted uppercase text-right">Score</span>
+              </div>
               <div className="divide-y divide-tf-border">
                 {data.top_clients.map((c, i) => (
                   <div key={c.client_id} className="grid grid-cols-12 gap-2 px-5 py-3.5 items-center hover:bg-tf-bg transition-colors">
@@ -162,6 +162,8 @@ export function VendeurClientsTab() {
                   </div>
                 ))}
               </div>
+              </div>
+              </div>
             )}
           </div>
         )}
@@ -170,7 +172,7 @@ export function VendeurClientsTab() {
           <div>
             {!data.clients_inactifs.length ? (
               <div className="p-8 text-center">
-                <p className="font-sans text-[14px] font-medium text-[#2D6A4F]">Aucun client inactif 🎉</p>
+                <p className="font-sans text-[14px] font-medium text-tf-success">Aucun client inactif 🎉</p>
                 <p className="font-sans text-[13px] text-tf-text-muted mt-1">Tous tes clients ont commandé récemment.</p>
               </div>
             ) : (
@@ -184,7 +186,7 @@ export function VendeurClientsTab() {
                       <div>
                         <p className="font-sans text-[13px] font-semibold text-tf-text">{c.nom}</p>
                         <p className="font-sans text-[11px] text-tf-text-muted">
-                          {c.nb_commandes} commande(s) · dernière il y a <span className="font-semibold text-[#B8892A]">{jours} jours</span>
+                          {c.nb_commandes} commande(s) · dernière il y a <span className="font-semibold text-tf-warning">{jours} jours</span>
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
@@ -210,19 +212,19 @@ export function VendeurClientsTab() {
         <div className="px-5 py-4 border-b border-tf-border flex items-center gap-2">
           <Sparkles size={16} className="text-tf-gold" />
           <h3 className="font-sans text-[14px] font-bold text-tf-text">Suggestions ciblées</h3>
-          <span className="ml-auto text-[10px] px-2 py-0.5 bg-[rgba(201,168,76,0.12)] text-tf-gold-dark rounded-full font-bold">IA</span>
+          <span className="ml-auto text-[10px] px-2 py-0.5 bg-tf-gold/[0.12] text-tf-gold-dark rounded-full font-bold">IA</span>
         </div>
         <div className="p-5 space-y-3">
           {[
             { client: "Bamba A.", recherche: "jupe wax rouge taille L", match: "Jupe wax imprimé rouge — 8 500 FCFA" },
             { client: "Konan M.", recherche: "chemise oversize homme M", match: "Chemise oversize coton — 12 000 FCFA" },
           ].map((s, i) => (
-            <div key={i} className="flex items-start justify-between gap-4 p-3 bg-[rgba(201,168,76,0.05)] border border-[rgba(201,168,76,0.2)] rounded-lg">
+            <div key={i} className="flex items-start justify-between gap-4 p-3 bg-tf-gold/[0.05] border border-tf-gold/20 rounded-lg">
               <div>
                 <p className="font-sans text-[13px] font-semibold text-tf-text">
                   <span className="text-tf-gold">{s.client}</span> cherche : <span className="italic">&ldquo;{s.recherche}&rdquo;</span>
                 </p>
-                <p className="font-sans text-[12px] text-[#2D6A4F] mt-0.5">✓ Correspondance dans ton stock : {s.match}</p>
+                <p className="font-sans text-[12px] text-tf-success mt-0.5">✓ Correspondance dans ton stock : {s.match}</p>
               </div>
               <Link
                 href="/messages"

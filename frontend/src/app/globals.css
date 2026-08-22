@@ -6,6 +6,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* ─── Variables CSS TheFriends ─────────────────────────────────────── */
+/* Doit rester identique à theme.extend.colors dans tailwind.config.ts —
+   ces variables existent pour les valeurs de couleur dynamiques (style
+   inline en JS) qui ne peuvent pas utiliser de classe Tailwind. */
 :root {
   --tf-black: #111111;
   --tf-charbon: #1C1C1C;
@@ -18,6 +21,17 @@
   --tf-border: #E8E4DC;
   --tf-text: #111111;
   --tf-text-muted: #7A766F;
+  --tf-success: #2D6A4F;
+  --tf-success-bg: #D8F3DC;
+  --tf-error: #C0392B;
+  --tf-error-bg: #FFCCCC;
+  --tf-error-soft: #FFF0F0;
+  --tf-error-soft-hover: #FFDDDD;
+  --tf-error-dark: #A93226;
+  --tf-warning: #B8892A;
+  --tf-warning-bg: #FFF3CD;
+  --tf-info: #185FA5;
+  --tf-info-bg: #E8F0FB;
 }
 
 /* ─── Reset base ────────────────────────────────────────────────────── */
@@ -128,9 +142,9 @@
 
   /* Bouton Danger */
   .btn-danger {
-    @apply bg-[#FFF0F0] text-tf-error border border-tf-error font-sans text-btn font-semibold
+    @apply bg-tf-error-soft text-tf-error border border-tf-error font-sans text-btn font-semibold
            px-6 py-3 rounded-md transition-colors duration-150
-           hover:bg-[#FFDDDD]
+           hover:bg-tf-error-soft-hover
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-error focus-visible:ring-offset-2;
   }
 

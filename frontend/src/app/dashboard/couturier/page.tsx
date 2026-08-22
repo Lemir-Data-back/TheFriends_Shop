@@ -17,6 +17,7 @@ import { CatalogueStockTab } from "@/components/dashboard/CatalogueStockTab"
 import { ParametresTab } from "@/components/dashboard/ParametresTab"
 import { EvolutionCharts, EvolutionPoint } from "@/components/dashboard/EvolutionCharts"
 import { DateRangePicker, DateRange, defaultRange, formatRangeLabel } from "@/components/dashboard/DateRangePicker"
+import { ProgressBar } from "@/components/ui/ProgressBar"
 
 interface CouturierDashboard {
   shop_id?: number
@@ -39,14 +40,6 @@ interface CouturierDashboard {
   }[]
   commandes_en_cours: Order[]
   evolution_mensuelle?: EvolutionPoint[]
-}
-
-function ProgressBar({ value, color = "#C9A84C" }: { value: number; color?: string }) {
-  return (
-    <div className="w-full bg-tf-gray-soft rounded-full h-1.5 overflow-hidden mt-1.5">
-      <div className="h-full rounded-full transition-all" style={{ width: `${value}%`, backgroundColor: color }} />
-    </div>
-  )
 }
 
 function DashboardCouturierContent() {
@@ -146,14 +139,14 @@ function DashboardCouturierContent() {
                   </div>
                   <div className="text-right">
                     <p className="font-sans text-[12px] text-tf-text-muted">Taux d&apos;acceptation</p>
-                    <p className="font-mono text-[24px] font-bold tabular-nums text-[#2D6A4F]">
+                    <p className="font-mono text-[24px] font-bold tabular-nums text-tf-success">
                       {data?.stats.taux_acceptation ?? 0}%
                     </p>
                     <p className="font-sans text-[11px] text-tf-text-muted">{data?.stats.nb_devis_envoyes} devis envoyés</p>
                   </div>
                 </div>
                 {/* Barre taux acceptation */}
-                <ProgressBar value={data?.stats.taux_acceptation ?? 0} color="#2D6A4F" />
+                <ProgressBar value={data?.stats.taux_acceptation ?? 0} color="var(--tf-success)" trackClassName="w-full h-1.5 mt-1.5" />
               </div>
 
               <div className="bg-white rounded-xl border border-tf-border p-5">
@@ -242,15 +235,15 @@ function DashboardCouturierContent() {
               <h3 className="font-sans text-[14px] font-bold text-tf-text mb-4">Mes scores de réputation</h3>
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { label: "Délais",        score: data?.stats.score_moyen ?? 0, color: "#C9A84C" },
-                  { label: "Qualité",       score: data?.stats.score_moyen ?? 0, color: "#2D6A4F" },
-                  { label: "Communication", score: data?.stats.score_moyen ?? 0, color: "#185FA5" },
+                  { label: "Délais",        score: data?.stats.score_moyen ?? 0, color: "var(--tf-gold)" },
+                  { label: "Qualité",       score: data?.stats.score_moyen ?? 0, color: "var(--tf-success)" },
+                  { label: "Communication", score: data?.stats.score_moyen ?? 0, color: "var(--tf-info)" },
                 ].map(({ label, score, color }) => (
                   <div key={label} className="text-center">
                     <p className="font-sans text-[11px] font-bold text-tf-text-muted uppercase tracking-wide mb-2">{label}</p>
                     <p className="font-mono text-[32px] font-bold tabular-nums" style={{ color }}>{score.toFixed(1)}</p>
                     <p className="font-sans text-[11px] text-tf-text-muted">/ 5</p>
-                    <ProgressBar value={(score / 5) * 100} color={color} />
+                    <ProgressBar value={(score / 5) * 100} color={color} trackClassName="w-full h-1.5 mt-1.5" />
                   </div>
                 ))}
               </div>
@@ -260,13 +253,13 @@ function DashboardCouturierContent() {
             <div className="bg-white rounded-xl border border-tf-border p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-sans text-[14px] font-bold text-tf-text">Tendances du marché</h3>
-                <span className="text-[10px] px-2 py-0.5 bg-[rgba(201,168,76,0.12)] text-tf-gold-dark rounded-full font-bold">IA · Phase 2</span>
+                <span className="text-[10px] px-2 py-0.5 bg-tf-gold/[0.12] text-tf-gold-dark rounded-full font-bold">IA · Phase 2</span>
               </div>
               <div className="space-y-3">
                 {[
-                  { label: "Boubou brodé", recherches: 127, delta: "+18%", color: "#2D6A4F" },
-                  { label: "Wax cérémonie", recherches: 94, delta: "+32%", color: "#C9A84C" },
-                  { label: "Robe mariage", recherches: 73, delta: "+8%",  color: "#185FA5" },
+                  { label: "Boubou brodé", recherches: 127, delta: "+18%", color: "var(--tf-success)" },
+                  { label: "Wax cérémonie", recherches: 94, delta: "+32%", color: "var(--tf-gold)" },
+                  { label: "Robe mariage", recherches: 73, delta: "+8%",  color: "var(--tf-info)" },
                 ].map((t) => (
                   <div key={t.label}>
                     <div className="flex justify-between mb-1">
@@ -276,7 +269,7 @@ function DashboardCouturierContent() {
                         <span className="font-sans text-[11px] text-tf-text-muted">{t.recherches} recherches</span>
                       </div>
                     </div>
-                    <ProgressBar value={(t.recherches / 150) * 100} color={t.color} />
+                    <ProgressBar value={(t.recherches / 150) * 100} color={t.color} trackClassName="w-full h-1.5 mt-1.5" />
                   </div>
                 ))}
               </div>

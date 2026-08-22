@@ -105,8 +105,8 @@ export function LogoutModal({ onConfirm, onCancel }: { onConfirm: () => void; on
           <X size={18} />
         </button>
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-[#FFF0F0] flex items-center justify-center shrink-0">
-            <AlertTriangle size={18} className="text-[#C0392B]" />
+          <div className="w-10 h-10 rounded-full bg-tf-error-soft flex items-center justify-center shrink-0">
+            <AlertTriangle size={18} className="text-tf-error" />
           </div>
           <h3 className="font-sans text-[16px] font-bold text-tf-text">Se déconnecter ?</h3>
         </div>
@@ -117,7 +117,7 @@ export function LogoutModal({ onConfirm, onCancel }: { onConfirm: () => void; on
           <button onClick={onCancel} className="flex-1 py-2.5 border border-tf-border rounded-lg font-sans font-semibold text-[13px] text-tf-text hover:bg-tf-gray-soft transition-colors">
             Annuler
           </button>
-          <button onClick={onConfirm} className="flex-1 py-2.5 bg-[#C0392B] rounded-lg font-sans font-bold text-[13px] text-white hover:bg-[#a93226] transition-colors">
+          <button onClick={onConfirm} className="flex-1 py-2.5 bg-tf-error rounded-lg font-sans font-bold text-[13px] text-white hover:bg-tf-error-dark transition-colors">
             Se déconnecter
           </button>
         </div>
@@ -249,9 +249,9 @@ export function Sidebar() {
         <div className="px-3 py-4 border-t border-tf-border shrink-0">
           <button
             onClick={() => setShowLogout(true)}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-tf-text-muted hover:bg-[#FFF0F0] hover:text-[#C0392B] transition-all group"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-tf-text-muted hover:bg-tf-error-soft hover:text-tf-error transition-all group"
           >
-            <LogOut size={18} className="shrink-0 group-hover:text-[#C0392B]" />
+            <LogOut size={18} className="shrink-0 group-hover:text-tf-error" />
             <span className="font-sans text-[13px] font-medium">Se déconnecter</span>
           </button>
         </div>

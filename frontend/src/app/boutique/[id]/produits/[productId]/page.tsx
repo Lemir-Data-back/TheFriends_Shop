@@ -98,6 +98,7 @@ export default function ProductPage() {
                   alt={`${product.titre} — vue ${activeImg + 1}`}
                   fill
                   priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
               ) : (
@@ -133,7 +134,7 @@ export default function ProductPage() {
                       activeImg === i ? "border-tf-gold" : "border-transparent hover:border-tf-border"
                     )}
                   >
-                    <Image src={img.url_cloudinary} alt="" fill className="object-cover" />
+                    <Image src={img.url_cloudinary} alt="" fill sizes="64px" className="object-cover" />
                   </button>
                 ))}
               </div>

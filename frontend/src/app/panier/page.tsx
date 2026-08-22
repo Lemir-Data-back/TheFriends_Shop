@@ -145,7 +145,7 @@ export default function PanierPage() {
                                 onClick={() => updateItem.mutate({ id: item.id, quantite: item.quantite - 1 })}
                                 disabled={item.quantite <= 1}
                                 aria-label="Diminuer la quantité"
-                                className="w-7 h-7 flex items-center justify-center rounded-md border border-tf-border hover:border-tf-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="relative w-7 h-7 flex items-center justify-center rounded-md border border-tf-border hover:border-tf-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed before:absolute before:-inset-2 before:content-['']"
                               >
                                 <Minus size={13} />
                               </button>
@@ -156,7 +156,7 @@ export default function PanierPage() {
                                 onClick={() => updateItem.mutate({ id: item.id, quantite: item.quantite + 1 })}
                                 disabled={item.quantite >= 10}
                                 aria-label="Augmenter la quantité"
-                                className="w-7 h-7 flex items-center justify-center rounded-md border border-tf-border hover:border-tf-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="relative w-7 h-7 flex items-center justify-center rounded-md border border-tf-border hover:border-tf-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed before:absolute before:-inset-2 before:content-['']"
                               >
                                 <Plus size={13} />
                               </button>
@@ -169,7 +169,7 @@ export default function PanierPage() {
                               <button
                                 onClick={() => removeItem.mutate(item.id)}
                                 aria-label={`Retirer ${item.product.titre} du panier`}
-                                className="p-1.5 -m-1.5 rounded-md text-tf-text-muted hover:text-tf-error transition-colors"
+                                className="p-3.5 -m-3.5 rounded-md text-tf-text-muted hover:text-tf-error transition-colors"
                               >
                                 <Trash2 size={16} />
                               </button>

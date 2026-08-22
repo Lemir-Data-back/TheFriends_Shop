@@ -52,7 +52,7 @@ function ShopCard({ shop }: { shop: Shop }) {
       {/* Photo boutique */}
       <div className="aspect-[3/2] bg-tf-black relative overflow-hidden">
         {shop.photo_url ? (
-          <Image src={shop.photo_url} alt={shop.nom} fill className="object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+          <Image src={shop.photo_url} alt={shop.nom} fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="font-serif text-[2.5rem] text-tf-gold opacity-60">
@@ -185,6 +185,8 @@ function ShoppingContent() {
       {/* Header sticky */}
       <div className="bg-white border-b border-tf-border sticky top-0 z-20">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
+
+          <h1 className="font-serif text-h3 text-tf-black pt-4">Shopping</h1>
 
           {/* Onglets Articles / Boutiques */}
           <div role="tablist" className="flex border-b border-tf-border -mb-px">

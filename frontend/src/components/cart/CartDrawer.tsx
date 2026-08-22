@@ -142,23 +142,26 @@ export function CartDrawer() {
                           <div className="flex items-center gap-2 mt-2">
                             <button
                               onClick={() => updateItem.mutate({ id: item.id, quantite: item.quantite - 1 })}
-                              className="w-6 h-6 flex items-center justify-center rounded border border-tf-border text-tf-text hover:border-tf-gold transition-colors"
+                              aria-label="Diminuer la quantité"
+                              className="relative w-6 h-6 flex items-center justify-center rounded border border-tf-border text-tf-text hover:border-tf-gold transition-colors before:absolute before:-inset-2.5 before:content-['']"
                             >
                               <Minus size={12} />
                             </button>
-                            <span className="font-sans text-[13px] font-medium w-4 text-center">
+                            <span className="font-sans text-[13px] font-medium w-4 text-center" aria-live="polite">
                               {item.quantite}
                             </span>
                             <button
                               onClick={() => updateItem.mutate({ id: item.id, quantite: item.quantite + 1 })}
                               disabled={item.quantite >= 10}
-                              className="w-6 h-6 flex items-center justify-center rounded border border-tf-border text-tf-text hover:border-tf-gold transition-colors disabled:opacity-40"
+                              aria-label="Augmenter la quantité"
+                              className="relative w-6 h-6 flex items-center justify-center rounded border border-tf-border text-tf-text hover:border-tf-gold transition-colors disabled:opacity-40 before:absolute before:-inset-2.5 before:content-['']"
                             >
                               <Plus size={12} />
                             </button>
                             <button
                               onClick={() => removeItem.mutate(item.id)}
-                              className="ml-auto text-tf-text-muted hover:text-red-500 transition-colors"
+                              aria-label={`Retirer ${item.product.titre} du panier`}
+                              className="relative ml-auto w-6 h-6 flex items-center justify-center text-tf-text-muted hover:text-red-500 transition-colors before:absolute before:-inset-2.5 before:content-['']"
                             >
                               <Trash2 size={14} />
                             </button>

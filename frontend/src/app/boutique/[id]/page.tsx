@@ -97,7 +97,7 @@ function BoutiqueContent({ shopId }: { shopId: string }) {
               style={{ borderColor: `${theme.couleur_principale}33`, backgroundColor: `${theme.couleur_principale}15` }}
             >
               {shop.photo_url ? (
-                <Image src={shop.photo_url} alt={shop.nom} fill className="object-cover" />
+                <Image src={shop.photo_url} alt={shop.nom} fill sizes="96px" className="object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <span

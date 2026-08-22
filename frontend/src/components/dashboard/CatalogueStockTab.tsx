@@ -120,7 +120,7 @@ export function CatalogueStockTab({ shopId, role = "vendeur" }: CatalogueStockTa
               <div key={p.id} className="flex items-center gap-3 px-4 py-3">
                 <div className="relative w-12 h-14 shrink-0 rounded-md overflow-hidden bg-tf-gray-soft">
                   {cover ? (
-                    <Image src={cover.url_cloudinary} alt={p.titre} fill className="object-cover" />
+                    <Image src={cover.url_cloudinary} alt={p.titre} fill sizes="48px" className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-tf-text-muted">
                       <Package size={16} />

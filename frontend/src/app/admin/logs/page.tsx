@@ -81,6 +81,16 @@ export default function LogsPage() {
       </p>
 
       <div className="bg-white rounded-xl border border-tf-border overflow-hidden">
+        {isLoading ? (
+          <div className="p-4 space-y-2">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-10 bg-tf-gray-soft rounded animate-pulse" />)}</div>
+        ) : !filtered.length ? (
+          <div className="p-10 text-center">
+            <ScrollText size={32} className="text-tf-text-muted mx-auto mb-3 opacity-40" />
+            <p className="font-sans text-[13px] text-tf-text-muted">Aucun événement sur cette période</p>
+          </div>
+        ) : (
+        <div className="overflow-x-auto">
+        <div className="min-w-[720px]">
         <div className="grid grid-cols-12 gap-2 px-5 py-3 bg-tf-bg border-b border-tf-border">
           {[
             { label: "Date / Heure", span: "col-span-2" },
@@ -95,14 +105,6 @@ export default function LogsPage() {
           ))}
         </div>
 
-        {isLoading ? (
-          <div className="p-4 space-y-2">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-10 bg-tf-gray-soft rounded animate-pulse" />)}</div>
-        ) : !filtered.length ? (
-          <div className="p-10 text-center">
-            <ScrollText size={32} className="text-tf-text-muted mx-auto mb-3 opacity-40" />
-            <p className="font-sans text-[13px] text-tf-text-muted">Aucun événement sur cette période</p>
-          </div>
-        ) : (
           <div className="divide-y divide-tf-border">
             {filtered.map(l => {
               const meta = actionMeta(l.action)
@@ -151,6 +153,8 @@ export default function LogsPage() {
               )
             })}
           </div>
+        </div>
+        </div>
         )}
       </div>
     </div>

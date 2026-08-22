@@ -10,6 +10,7 @@ import {
   Wallet, ClipboardList, UserCheck, Bell, RefreshCw,
 } from "lucide-react"
 import { TiltCard } from "@/components/ui/TiltCard"
+import { ProgressBar as SharedProgressBar } from "@/components/ui/ProgressBar"
 
 // ── Hook scroll animation ────────────────────────────────────────────────────
 
@@ -200,7 +201,7 @@ function ActorTabs() {
               className={`relative bg-white border rounded-xl p-5 transition-all duration-200 ease-out group ${
                 (f as { soon?: boolean }).soon
                   ? "border-tf-border opacity-70"
-                  : "border-tf-border hover:border-[rgba(201,168,76,0.5)] hover:shadow-card-hover motion-safe:hover:-translate-y-1"
+                  : "border-tf-border hover:border-tf-gold/50 hover:shadow-card-hover motion-safe:hover:-translate-y-1"
               }`}
               style={{ animationDelay: `${i * 60}ms` }}
             >
@@ -212,7 +213,7 @@ function ActorTabs() {
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-4 transition-colors ${
                 (f as { soon?: boolean }).soon
                   ? "bg-tf-gray-soft text-tf-text-muted"
-                  : "bg-tf-gray-soft text-tf-gold group-hover:bg-[rgba(201,168,76,0.1)]"
+                  : "bg-tf-gray-soft text-tf-gold group-hover:bg-tf-gold/10"
               }`}>
                 {f.icon}
               </div>
@@ -325,7 +326,7 @@ function StatPill({ label, value, up }: { label: string; value: string; up?: boo
       <span className="font-sans text-[11px] font-medium text-tf-text-muted">{label}</span>
       <span
         className={`font-mono text-[13px] font-bold tabular-nums tracking-tight ${
-          up === undefined ? "text-tf-text" : up ? "text-[#2D6A4F]" : "text-[#C0392B]"
+          up === undefined ? "text-tf-text" : up ? "text-tf-success" : "text-tf-error"
         }`}
       >
         {up !== undefined && <span className="mr-0.5 text-[11px]">{up ? "↑" : "↓"}</span>}
@@ -337,7 +338,7 @@ function StatPill({ label, value, up }: { label: string; value: string; up?: boo
 
 function IaCard({ text }: { text: string }) {
   return (
-    <div className="border border-[rgba(201,168,76,0.35)] bg-[rgba(201,168,76,0.06)] rounded-lg p-3 flex gap-2.5">
+    <div className="border border-tf-gold/[0.35] bg-tf-gold/[0.06] rounded-lg p-3 flex gap-2.5">
       <Sparkles size={14} className="text-tf-gold mt-0.5 shrink-0" />
       <p className="font-sans text-[12px] text-tf-text leading-relaxed italic">&ldquo;{text}&rdquo;</p>
     </div>
@@ -346,9 +347,9 @@ function IaCard({ text }: { text: string }) {
 
 function AlertCard({ text, type = "warning" }: { text: string; type?: "warning" | "success" | "info" }) {
   const colors = {
-    warning: "border-[rgba(184,137,42,0.4)] bg-[#FFF3CD] text-[#B8892A]",
-    success: "border-[rgba(45,106,79,0.3)] bg-[#D8F3DC] text-[#2D6A4F]",
-    info:    "border-[rgba(24,95,165,0.3)] bg-[#E8F0FB] text-[#185FA5]",
+    warning: "border-tf-warning/40 bg-tf-warning-bg text-tf-warning",
+    success: "border-tf-success/30 bg-tf-success-bg text-tf-success",
+    info:    "border-tf-info/30 bg-tf-info-bg text-tf-info",
   }
   return (
     <div className={`border rounded-lg px-3 py-2 flex gap-2 items-start ${colors[type]}`}>
@@ -359,15 +360,8 @@ function AlertCard({ text, type = "warning" }: { text: string; type?: "warning" 
 }
 
 
-function ProgressBar({ value, max, color = "#C9A84C" }: { value: number; max: number; color?: string }) {
-  return (
-    <div className="w-full bg-tf-gray-soft rounded-full h-1.5 overflow-hidden">
-      <div
-        className="h-full rounded-full transition-all duration-1000"
-        style={{ width: `${Math.min(100, (value / max) * 100)}%`, backgroundColor: color }}
-      />
-    </div>
-  )
+function ProgressBar({ value, max, color = "var(--tf-gold)" }: { value: number; max: number; color?: string }) {
+  return <SharedProgressBar value={(value / max) * 100} color={color} />
 }
 
 function ClientDashboardMock() {
@@ -375,14 +369,14 @@ function ClientDashboardMock() {
     <div className="bg-white border border-tf-border rounded-2xl p-5 space-y-4 shadow-card">
       <div className="flex items-center justify-between mb-1">
         <span className="font-sans text-[11px] font-semibold text-tf-text-muted uppercase tracking-wider">Mon tableau de bord</span>
-        <span className="text-[10px] px-2 py-0.5 bg-[rgba(201,168,76,0.12)] text-tf-gold-dark rounded-full font-semibold">⭐ Client Premium</span>
+        <span className="text-[10px] px-2 py-0.5 bg-tf-gold/[0.12] text-tf-gold-dark rounded-full font-semibold">⭐ Client Premium</span>
       </div>
 
       {/* Budget */}
       <div>
         <div className="flex justify-between mb-1.5">
           <span className="font-sans text-[12px] font-medium text-tf-text">Budget du mois</span>
-          <span className="font-serif text-[13px] text-tf-text font-medium">75 000 <span className="text-tf-text-muted text-[11px]">/ 100 000 FCFA</span></span>
+          <span className="font-mono text-[13px] text-tf-text font-medium">75 000 <span className="text-tf-text-muted text-[11px]">/ 100 000 FCFA</span></span>
         </div>
         <ProgressBar value={75000} max={100000} />
         <p className="font-sans text-[11px] text-tf-text-muted mt-1">25 000 FCFA disponibles ce mois</p>
@@ -413,7 +407,7 @@ function CouturierDashboardMock() {
     <div className="bg-white border border-tf-border rounded-2xl p-5 space-y-4 shadow-card">
       <div className="flex items-center justify-between mb-1">
         <span className="font-sans text-[11px] font-semibold text-tf-text-muted uppercase tracking-wider">Mon Atelier Intelligent</span>
-        <span className="text-[10px] px-2 py-0.5 bg-[#D8F3DC] text-[#2D6A4F] rounded-full font-semibold">✓ Couturier Fiable</span>
+        <span className="text-[10px] px-2 py-0.5 bg-tf-success-bg text-tf-success rounded-full font-semibold">✓ Couturier Fiable</span>
       </div>
 
       {/* Tendance */}
@@ -422,12 +416,12 @@ function CouturierDashboardMock() {
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
             <span className="font-sans text-[12px] text-tf-text">Boubou brodé</span>
-            <span className="font-sans text-[12px] font-semibold text-[#2D6A4F]">127 recherches ↑</span>
+            <span className="font-sans text-[12px] font-semibold text-tf-success">127 recherches ↑</span>
           </div>
-          <ProgressBar value={127} max={150} color="#2D6A4F" />
+          <ProgressBar value={127} max={150} color="var(--tf-success)" />
           <div className="flex justify-between items-center">
             <span className="font-sans text-[12px] text-tf-text">Wax cérémonie</span>
-            <span className="font-sans text-[12px] font-semibold text-[#C9A84C]">+32% ↑</span>
+            <span className="font-sans text-[12px] font-semibold text-tf-gold">+32% ↑</span>
           </div>
           <ProgressBar value={82} max={100} />
         </div>
@@ -477,7 +471,7 @@ function CouturierDashboardMock() {
               <div className="text-right shrink-0">
                 <p className="font-mono text-[12px] font-bold tabular-nums text-tf-text">{c.ca}</p>
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
-                  c.label === "Premium" ? "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark" : "bg-[#D8F3DC] text-[#2D6A4F]"
+                  c.label === "Premium" ? "bg-tf-gold/[0.15] text-tf-gold-dark" : "bg-tf-success-bg text-tf-success"
                 }`}>{c.label}</span>
               </div>
             </div>
@@ -486,18 +480,18 @@ function CouturierDashboardMock() {
       </div>
 
       {/* Clients inactifs */}
-      <div className="border border-[rgba(184,137,42,0.4)] bg-tf-warning-bg rounded-lg p-3 space-y-1.5">
-        <p className="font-sans text-[11px] font-bold text-[#B8892A] uppercase tracking-wide">
+      <div className="border border-tf-warning/40 bg-tf-warning-bg rounded-lg p-3 space-y-1.5">
+        <p className="font-sans text-[11px] font-bold text-tf-warning uppercase tracking-wide">
           ⏰ 2 clients inactifs depuis 60 j+
         </p>
         <p className="font-sans text-[11px] text-tf-text-muted">Koné B., Diallo A. — dernière commande il y a plus de 2 mois</p>
-        <p className="font-sans text-[11px] font-semibold text-[#B8892A] cursor-pointer hover:underline">
+        <p className="font-sans text-[11px] font-semibold text-tf-warning cursor-pointer hover:underline">
           → Envoyer une relance personnalisée
         </p>
       </div>
 
       {/* Suggestion ciblée */}
-      <div className="border border-[rgba(201,168,76,0.35)] bg-[rgba(201,168,76,0.06)] rounded-lg p-3 flex gap-2.5">
+      <div className="border border-tf-gold/[0.35] bg-tf-gold/[0.06] rounded-lg p-3 flex gap-2.5">
         <Sparkles size={13} className="text-tf-gold mt-0.5 shrink-0" />
         <p className="font-sans text-[11px] text-tf-text leading-relaxed">
           <strong>Nadia S.</strong> cherche une robe wax bicolore — tu as un modèle correspondant dans ton catalogue
@@ -526,9 +520,9 @@ function VendeurDashboardMock() {
       <IaCard text="Chemise oversize homme très recherchée à Yopougon — aucun article dans ton catalogue ne correspond" />
 
       {/* Calendrier ivoirien */}
-      <div className="border border-[rgba(24,95,165,0.3)] bg-[#E8F0FB] rounded-lg px-3 py-2.5 flex gap-2.5 items-start">
-        <Calendar size={13} className="text-[#185FA5] mt-0.5 shrink-0" />
-        <p className="font-sans text-[12px] text-[#185FA5] leading-relaxed">
+      <div className="border border-tf-info/30 bg-tf-info-bg rounded-lg px-3 py-2.5 flex gap-2.5 items-start">
+        <Calendar size={13} className="text-tf-info mt-0.5 shrink-0" />
+        <p className="font-sans text-[12px] text-tf-info leading-relaxed">
           <strong>Tabaski dans 45 jours</strong> — Prépare tes collections cérémonie maintenant.
         </p>
       </div>
@@ -553,8 +547,8 @@ function VendeurDashboardMock() {
               <div className="text-right shrink-0">
                 <p className="font-mono text-[12px] font-bold tabular-nums text-tf-text">{c.ca}</p>
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
-                  c.label === "Premium"  ? "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark" :
-                  c.label === "Fiable"   ? "bg-[#D8F3DC] text-[#2D6A4F]" :
+                  c.label === "Premium"  ? "bg-tf-gold/[0.15] text-tf-gold-dark" :
+                  c.label === "Fiable"   ? "bg-tf-success-bg text-tf-success" :
                                            "bg-tf-border text-tf-text-muted"
                 }`}>{c.label}</span>
               </div>
@@ -563,23 +557,23 @@ function VendeurDashboardMock() {
         </div>
         <div className="mt-2.5 pt-2.5 border-t border-tf-border flex justify-between">
           <span className="font-sans text-[11px] text-tf-text-muted">Clients fidèles (3+ cmd)</span>
-          <span className="font-mono text-[12px] font-bold tabular-nums text-[#2D6A4F]">12 / 47</span>
+          <span className="font-mono text-[12px] font-bold tabular-nums text-tf-success">12 / 47</span>
         </div>
       </div>
 
       {/* Clients inactifs */}
-      <div className="border border-[rgba(184,137,42,0.4)] bg-tf-warning-bg rounded-lg p-3 space-y-1.5">
-        <p className="font-sans text-[11px] font-bold text-[#B8892A] uppercase tracking-wide">
+      <div className="border border-tf-warning/40 bg-tf-warning-bg rounded-lg p-3 space-y-1.5">
+        <p className="font-sans text-[11px] font-bold text-tf-warning uppercase tracking-wide">
           ⏰ 5 clients inactifs depuis 30 j+
         </p>
         <p className="font-sans text-[11px] text-tf-text-muted">Ils ont acheté par le passé mais n&apos;ont pas commandé ce mois</p>
-        <p className="font-sans text-[11px] font-semibold text-[#B8892A] cursor-pointer hover:underline">
+        <p className="font-sans text-[11px] font-semibold text-tf-warning cursor-pointer hover:underline">
           → Suggérer un article en lien avec leurs achats précédents
         </p>
       </div>
 
       {/* Suggestion ciblée */}
-      <div className="border border-[rgba(201,168,76,0.35)] bg-[rgba(201,168,76,0.06)] rounded-lg p-3 flex gap-2.5">
+      <div className="border border-tf-gold/[0.35] bg-tf-gold/[0.06] rounded-lg p-3 flex gap-2.5">
         <Sparkles size={13} className="text-tf-gold mt-0.5 shrink-0" />
         <p className="font-sans text-[11px] text-tf-text leading-relaxed">
           <strong>Bamba A.</strong> a cherché &ldquo;jupe wax rouge L&rdquo; — tu as cet article en stock à 8 500 FCFA
@@ -778,7 +772,7 @@ function IntelligenceSection() {
                 className="flex gap-4"
                 style={{ animationDelay: `${i * 80}ms` }}
               >
-                <div className="w-9 h-9 rounded-lg bg-[rgba(201,168,76,0.1)] flex items-center justify-center shrink-0 text-tf-gold mt-0.5">
+                <div className="w-9 h-9 rounded-lg bg-tf-gold/10 flex items-center justify-center shrink-0 text-tf-gold mt-0.5">
                   {f.icon}
                 </div>
                 <div>
@@ -808,9 +802,6 @@ export function HomeSections() {
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-20">
         <FadeUp>
           <div className="text-center mb-14">
-            <span className="inline-block px-4 py-1.5 bg-[rgba(201,168,76,0.12)] text-tf-gold-dark rounded-full font-sans text-[12px] font-semibold uppercase tracking-wider mb-4">
-              Pour qui ?
-            </span>
             <h2 className="font-serif text-h1 text-tf-text mb-3">
               Une plateforme pensée pour chacun
             </h2>
@@ -835,9 +826,6 @@ export function HomeSections() {
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-20">
         <FadeUp>
           <div className="text-center mb-14">
-            <span className="inline-block px-4 py-1.5 bg-[rgba(201,168,76,0.12)] text-tf-gold-dark rounded-full font-sans text-[12px] font-semibold uppercase tracking-wider mb-4">
-              La vraie valeur ajoutée
-            </span>
             <h2 className="font-serif text-h1 text-tf-text mb-3">
               La donnée travaille pour vous
             </h2>
@@ -861,9 +849,6 @@ export function HomeSections() {
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-20">
         <FadeUp>
           <div className="text-center mb-14">
-            <span className="inline-block px-4 py-1.5 bg-[rgba(201,168,76,0.12)] text-tf-gold-dark rounded-full font-sans text-[12px] font-semibold uppercase tracking-wider mb-4">
-              Simple et rapide
-            </span>
             <h2 className="font-serif text-h1 text-tf-text mb-3">
               Comment ça marche ?
             </h2>

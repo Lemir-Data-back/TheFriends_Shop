@@ -82,7 +82,7 @@ export default function AdminPage() {
         <div className="grid grid-cols-2 gap-3">
           <StatCard label="Litiges ouverts"   value={data?.nb_litiges_ouverts    ?? 0} color={data?.nb_litiges_ouverts    ? "text-tf-error"   : "text-tf-black"} />
           <StatCard label="Cmds en cours"     value={data?.nb_commandes_en_cours ?? 0} />
-          <StatCard label="Boutiques attente" value={data?.nb_shops_en_attente   ?? 0} color="text-[#B8892A]" />
+          <StatCard label="Boutiques attente" value={data?.nb_shops_en_attente   ?? 0} color="text-tf-warning" />
           <StatCard label="Nouveaux users 7j" value={data?.nb_nouveaux_users_7j  ?? 0} color="text-tf-success" />
         </div>
       </div>
@@ -98,13 +98,13 @@ export default function AdminPage() {
                   <stop offset="95%" stopColor={CHART_GOLD} stopOpacity={0}    />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--tf-border)" vertical={false} />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: CHART_GRAY }} tickFormatter={fmtDate} interval={tickInterval(series?.ca)} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 10, fill: CHART_GRAY }} tickFormatter={fmtCaShort} tickLine={false} axisLine={false} width={36} />
               <Tooltip
                 formatter={(v) => [typeof v === "number" ? formatPrix(v) : "—", "CA"]}
                 labelFormatter={(l) => fmtDate(String(l))}
-                contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 12px rgba(0,0,0,.08)" }}
+                contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--tf-border)", boxShadow: "0 4px 12px rgba(0,0,0,.08)" }}
               />
               <Area type="monotone" dataKey="value" stroke={CHART_GOLD} strokeWidth={2} fill="url(#goldGrad)" dot={false} activeDot={{ r: 4, fill: CHART_GOLD, strokeWidth: 0 }} />
             </AreaChart>
@@ -119,7 +119,7 @@ export default function AdminPage() {
               <Pie data={roleData} cx="50%" cy="50%" innerRadius={38} outerRadius={55} paddingAngle={3} dataKey="value" startAngle={90} endAngle={-270}>
                 {roleData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
               </Pie>
-              <Tooltip formatter={(v) => [v ?? 0, ""]} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+              <Tooltip formatter={(v) => [v ?? 0, ""]} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--tf-border)" }} />
             </PieChart>
           </ResponsiveContainer>
           <div className="space-y-2 mt-1">
@@ -151,10 +151,10 @@ export default function AdminPage() {
                   <stop offset="95%" stopColor={CHART_SUCCESS} stopOpacity={0}    />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--tf-border)" vertical={false} />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: CHART_GRAY }} tickFormatter={fmtDate} interval={tickInterval(series?.nouveaux_users)} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 10, fill: CHART_GRAY }} tickLine={false} axisLine={false} width={20} allowDecimals={false} />
-              <Tooltip formatter={(v) => [v ?? 0, "utilisateurs"]} labelFormatter={(l) => fmtDate(String(l))} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+              <Tooltip formatter={(v) => [v ?? 0, "utilisateurs"]} labelFormatter={(l) => fmtDate(String(l))} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--tf-border)" }} />
               <Area type="monotone" dataKey="value" stroke={CHART_SUCCESS} strokeWidth={2} fill="url(#greenGrad)" dot={false} activeDot={{ r: 4, fill: CHART_SUCCESS, strokeWidth: 0 }} />
             </AreaChart>
           </ResponsiveContainer>
@@ -163,10 +163,10 @@ export default function AdminPage() {
         <ChartCard title="Commandes par jour" period={PERIOD_LABELS[period]}>
           <ResponsiveContainer width="100%" height={140}>
             <BarChart data={series?.commandes ?? []} margin={{ top: 4, right: 4, left: 0, bottom: 4 }} barSize={period === "7d" ? 22 : period === "30d" ? 8 : 4}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--tf-border)" vertical={false} />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: CHART_GRAY }} tickFormatter={fmtDate} interval={tickInterval(series?.commandes)} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 10, fill: CHART_GRAY }} tickLine={false} axisLine={false} width={20} allowDecimals={false} />
-              <Tooltip formatter={(v) => [v ?? 0, "commandes"]} labelFormatter={(l) => fmtDate(String(l))} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+              <Tooltip formatter={(v) => [v ?? 0, "commandes"]} labelFormatter={(l) => fmtDate(String(l))} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--tf-border)" }} />
               <Bar dataKey="value" fill={CHART_BLUE} fillOpacity={0.85} radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

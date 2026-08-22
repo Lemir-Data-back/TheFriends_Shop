@@ -44,9 +44,9 @@ function InstallmentBadgeInner({ shopId, orderAmount, onSelect }: InstallmentBad
       </p>
       <p className="text-tf-text-muted mt-0.5">
         Acompte dès{" "}
-        <span className="font-medium text-tf-text">{formatFCFA(acompte)}</span>
+        <span className="font-mono font-medium text-tf-text">{formatFCFA(acompte)}</span>
         {bestPlan.frais_percent === 0 && (
-          <span className="ml-1 text-xs text-[#2D6A4F] font-medium">sans frais</span>
+          <span className="ml-1 text-xs text-tf-success font-medium">sans frais</span>
         )}
       </p>
       {eligiblePlans.length > 1 && (

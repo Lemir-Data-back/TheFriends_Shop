@@ -41,7 +41,7 @@ function Logo({ dark = false, className = "", shop }: { dark?: boolean; classNam
         <Link href={`/boutique/${shop.id}`} className="flex items-center gap-2.5" aria-label={`${shop.nom} — accueil boutique`}>
           {shop.logoUrl ? (
             <span className="relative w-8 h-8 rounded-xl overflow-hidden shrink-0 bg-tf-gray-soft">
-              <Image src={shop.logoUrl} alt="" fill className="object-cover" />
+              <Image src={shop.logoUrl} alt="" fill sizes="32px" className="object-cover" />
             </span>
           ) : (
             <span className="monogram-tf w-8 h-8 text-[13px] shrink-0">{shop.nom[0]?.toUpperCase()}</span>
