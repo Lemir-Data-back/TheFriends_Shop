@@ -51,13 +51,14 @@ export default function AdminPage() {
 
       {/* Filtre période */}
       <div className="flex items-center justify-between">
-        <h2 className="font-sans text-[14px] font-bold text-tf-text">Vue d&apos;ensemble</h2>
-        <div className="flex gap-1 bg-tf-gray-soft rounded-lg p-1">
+        <h2 id="admin-period-label" className="font-sans text-[14px] font-bold text-tf-text">Vue d&apos;ensemble</h2>
+        <div role="radiogroup" aria-labelledby="admin-period-label" className="flex gap-1 bg-tf-gray-soft rounded-lg p-1">
           {(["7d", "30d", "90d"] as const).map(p => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              aria-pressed={period === p}
+              role="radio"
+              aria-checked={period === p}
               className={`px-3 py-1.5 rounded-md font-sans text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                 period === p ? "bg-white text-tf-black shadow-sm" : "text-tf-text-muted hover:text-tf-text"
               }`}

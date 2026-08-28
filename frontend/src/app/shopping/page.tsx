@@ -47,7 +47,7 @@ function ShopCard({ shop }: { shop: Shop }) {
   return (
     <Link
       href={`/boutique/${shop.id}`}
-      className="bg-white border border-tf-border rounded-xl overflow-hidden hover:border-[rgba(201,168,76,0.5)] hover:shadow-card transition-all duration-200 group"
+      className="bg-white border border-tf-border rounded-xl overflow-hidden hover:border-tf-gold/50 hover:shadow-card transition-all duration-200 group"
     >
       {/* Photo boutique */}
       <div className="aspect-[3/2] bg-tf-black relative overflow-hidden">
@@ -215,7 +215,7 @@ function ShoppingContent() {
             {activeTab === "articles" && (
               <>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 flex items-center gap-2 bg-tf-gray-soft rounded-md px-3 py-2 border border-tf-border focus-within:border-tf-gold focus-within:ring-2 focus-within:ring-[rgba(201,168,76,0.2)] transition-all">
+                  <div className="flex-1 flex items-center gap-2 bg-tf-gray-soft rounded-md px-3 py-2 border border-tf-border focus-within:border-tf-gold focus-within:ring-2 focus-within:ring-tf-gold/20 transition-all">
                     <Search size={15} className="text-tf-text-muted shrink-0" />
                     <input
                       type="text"
@@ -279,7 +279,7 @@ function ShoppingContent() {
 
             {activeTab === "boutiques" && (
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex-1 min-w-48 flex items-center gap-2 bg-tf-gray-soft rounded-md px-3 py-2 border border-tf-border focus-within:border-tf-gold focus-within:ring-2 focus-within:ring-[rgba(201,168,76,0.2)] transition-all">
+                <div className="flex-1 min-w-48 flex items-center gap-2 bg-tf-gray-soft rounded-md px-3 py-2 border border-tf-border focus-within:border-tf-gold focus-within:ring-2 focus-within:ring-tf-gold/20 transition-all">
                   <Search size={15} className="text-tf-text-muted shrink-0" />
                   <input
                     type="text"

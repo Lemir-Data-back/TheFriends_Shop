@@ -6,13 +6,16 @@ from app.modules.commandes.models import Order, OrderType, OrderStatut, EscrowSt
 API = "/api/v1"
 
 
-def _register(context, role, telephone, nom="Test"):
-    resp = context.client.post(f"{API}/auth/register", json={
+def _register(context, role, telephone, nom="Test", shop_nom=None):
+    payload = {
         "full_name": nom,
         "phone": telephone,
         "password": "test1234",
         "role": role,
-    })
+    }
+    if shop_nom:
+        payload["shop_nom"] = shop_nom
+    resp = context.client.post(f"{API}/auth/register", json=payload)
     assert resp.status_code == 201, resp.text
     data = resp.json()
     context.tokens[telephone] = data["access_token"]
@@ -31,13 +34,12 @@ def step_client_inscrit(context, telephone):
 
 @given('un couturier inscrit avec le téléphone "{telephone}" et une boutique nommée "{nom_boutique}"')
 def step_couturier_avec_boutique(context, telephone, nom_boutique):
-    _register(context, "couturier", telephone, "Couturier Test")
-    resp = context.client.post(
-        f"{API}/shops",
-        json={"nom": nom_boutique, "type": "couturier", "zone": "Cocody"},
-        headers=_headers(context, telephone),
-    )
-    assert resp.status_code == 201, resp.text
+    # L'inscription couturier/vendeur crée déjà la boutique dans la même transaction
+    # (shop_nom obligatoire) — pas de second appel à POST /shops, qui refuserait
+    # désormais une deuxième boutique pour le même compte.
+    _register(context, "couturier", telephone, "Couturier Test", shop_nom=nom_boutique)
+    resp = context.client.get(f"{API}/shops/me/shop", headers=_headers(context, telephone))
+    assert resp.status_code == 200, resp.text
     context.shops[telephone] = resp.json()["id"]
 
 

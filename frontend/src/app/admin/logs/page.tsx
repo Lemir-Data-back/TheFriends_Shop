@@ -10,11 +10,11 @@ import type { LogEntry } from "../_components/types"
 const ACTION_META: Record<string, { label: string; color: string }> = {
   connexion:          { label: "Connexion",          color: "bg-tf-success-bg text-tf-success" },
   connexion_echec:    { label: "Échec connexion",    color: "bg-tf-error-bg text-tf-error" },
-  inscription:        { label: "Inscription",        color: "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark" },
+  inscription:        { label: "Inscription",        color: "bg-tf-gold/[0.15] text-tf-gold-dark" },
   boutique_validee:   { label: "Boutique validée",   color: "bg-tf-success-bg text-tf-success" },
   boutique_suspendue: { label: "Boutique suspendue", color: "bg-tf-error-bg text-tf-error" },
   user_modifie:       { label: "User modifié",       color: "bg-tf-gray-soft text-tf-text-muted" },
-  litige_resolu:      { label: "Litige résolu",      color: "bg-[rgba(24,95,165,0.1)] text-[#185FA5]" },
+  litige_resolu:      { label: "Litige résolu",      color: "bg-tf-info/10 text-tf-info" },
 }
 
 const ACTION_FILTERS = [
@@ -123,7 +123,7 @@ export default function LogsPage() {
                       <>
                         <p className="font-sans text-[12px] font-semibold text-tf-text truncate">{l.user_name}</p>
                         {l.user_role && (
-                          <Badge color={l.user_role === "admin" ? "bg-tf-black text-white" : l.user_role === "couturier" ? "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark" : "bg-tf-gray-soft text-tf-text-muted"}>
+                          <Badge color={l.user_role === "admin" ? "bg-tf-black text-white" : l.user_role === "couturier" ? "bg-tf-gold/[0.15] text-tf-gold-dark" : "bg-tf-gray-soft text-tf-text-muted"}>
                             {l.user_role}
                           </Badge>
                         )}

@@ -19,7 +19,7 @@ const MENSURATION_LABELS: Record<string, string> = {
 };
 
 function scoreBadgeClass(score: number): string {
-  if (score >= 4.5) return "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark";
+  if (score >= 4.5) return "bg-tf-gold/[0.15] text-tf-gold-dark";
   if (score >= 3.5) return "bg-tf-success-bg text-tf-success";
   if (score >= 2.5) return "bg-tf-gray-soft text-tf-text-muted";
   return "bg-tf-error-bg text-tf-error";
@@ -337,7 +337,7 @@ export default function CommandeDetailPage() {
                   <button
                     onClick={() => negocier.mutate({ action: "accepter" })}
                     disabled={negocier.isPending}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-tf-success text-white rounded-md font-sans text-[12px] font-bold hover:bg-[#25593f] transition-colors disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-tf-success text-white rounded-md font-sans text-[12px] font-bold hover:bg-tf-success-dark transition-colors disabled:opacity-50"
                   >
                     <Check size={13} /> Accepter
                   </button>

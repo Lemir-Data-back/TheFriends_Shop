@@ -2,9 +2,9 @@
 
 import { Search } from "lucide-react"
 
-export const CHART_GOLD    = "#C9A84C"
-export const CHART_SUCCESS = "#2D6A4F"
-export const CHART_BLUE    = "#185FA5"
+export const CHART_GOLD    = "var(--tf-gold)"
+export const CHART_SUCCESS = "var(--tf-success)"
+export const CHART_BLUE    = "var(--tf-info)"
 export const CHART_GRAY    = "#9CA3AF"
 
 export function fmtDate(dateStr: string): string {
@@ -45,10 +45,11 @@ export function SearchBar({ value, onChange, placeholder }: {
       <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-tf-text-muted" />
       <input
         type="text"
+        aria-label={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-9 pr-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-[rgba(201,168,76,0.2)] bg-white"
+        className="w-full pl-9 pr-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-tf-gold/20 bg-white"
       />
     </div>
   )

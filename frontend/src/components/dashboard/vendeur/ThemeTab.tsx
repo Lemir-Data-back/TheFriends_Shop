@@ -36,6 +36,7 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
           />
           <input
             type="color"
+            aria-label={label}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             className="sr-only"
@@ -102,7 +103,7 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
                   couleur_secondaire: p.couleur_secondaire,
                 })}
                 aria-pressed={theme.couleur_principale === p.couleur_principale && theme.couleur_fond === p.couleur_fond}
-                className="flex items-center gap-2 p-2.5 border border-tf-border rounded-lg hover:border-[rgba(201,168,76,0.5)] transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold"
+                className="flex items-center gap-2 p-2.5 border border-tf-border rounded-lg hover:border-tf-gold/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold"
               >
                 <div className="flex gap-1 shrink-0">
                   <div className="w-4 h-8 rounded-sm" style={{ backgroundColor: p.couleur_secondaire }} />
@@ -177,24 +178,26 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
               { label: "Message d'accueil", key: "message_accueil" as const, placeholder: "Bienvenue dans ma boutique...", multiline: false },
             ].map(({ label, key, placeholder }) => (
               <div key={key}>
-                <label className="font-sans text-[12px] font-semibold text-tf-text block mb-1">{label}</label>
+                <label htmlFor={`theme-${key}`} className="font-sans text-[12px] font-semibold text-tf-text block mb-1">{label}</label>
                 <input
+                  id={`theme-${key}`}
                   type="text"
                   value={(theme[key] as string) ?? ""}
                   onChange={(e) => update({ [key]: e.target.value })}
                   placeholder={placeholder}
-                  className="w-full px-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-[rgba(201,168,76,0.2)]"
+                  className="w-full px-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-tf-gold/20"
                 />
               </div>
             ))}
             <div>
-              <label className="font-sans text-[12px] font-semibold text-tf-text block mb-1">À propos</label>
+              <label htmlFor="theme-a-propos" className="font-sans text-[12px] font-semibold text-tf-text block mb-1">À propos</label>
               <textarea
+                id="theme-a-propos"
                 value={(theme.a_propos as string) ?? ""}
                 onChange={(e) => update({ a_propos: e.target.value })}
                 placeholder="Décris ton atelier, tes spécialités, ton histoire..."
                 rows={3}
-                className="w-full px-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-[rgba(201,168,76,0.2)] resize-none"
+                className="w-full px-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-tf-gold/20 resize-none"
               />
             </div>
           </div>
@@ -212,13 +215,14 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
               { label: "Horaires",   key: "horaires"           as const, placeholder: "Lun–Sam, 9h–19h" },
             ].map(({ label, key, placeholder }) => (
               <div key={key}>
-                <label className="font-sans text-[12px] font-semibold text-tf-text block mb-1">{label}</label>
+                <label htmlFor={`theme-${key}`} className="font-sans text-[12px] font-semibold text-tf-text block mb-1">{label}</label>
                 <input
+                  id={`theme-${key}`}
                   type="text"
                   value={(theme[key] as string) ?? ""}
                   onChange={(e) => update({ [key]: e.target.value })}
                   placeholder={placeholder}
-                  className="w-full px-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-[rgba(201,168,76,0.2)]"
+                  className="w-full px-3 py-2 border border-tf-border rounded-lg font-sans text-[13px] text-tf-text placeholder-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-tf-gold/20"
                 />
               </div>
             ))}
@@ -230,8 +234,8 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
           <h3 className="font-sans text-[13px] font-bold text-tf-text mb-3">Disposition</h3>
           <div className="space-y-3">
             <div>
-              <p className="font-sans text-[12px] font-semibold text-tf-text mb-2">Style hero</p>
-              <div className="flex gap-2">
+              <p id="theme-hero-style-label" className="font-sans text-[12px] font-semibold text-tf-text mb-2">Style hero</p>
+              <div role="radiogroup" aria-labelledby="theme-hero-style-label" className="flex gap-2">
                 {[
                   { id: "full",    label: "Plein écran" },
                   { id: "split",   label: "Côte à côte" },
@@ -240,7 +244,8 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
                   <button
                     key={s.id}
                     onClick={() => update({ layout_config: { ...theme.layout_config, hero_style: s.id as "full" | "split" | "minimal" } })}
-                    aria-pressed={theme.layout_config?.hero_style === s.id}
+                    role="radio"
+                    aria-checked={theme.layout_config?.hero_style === s.id}
                     className={`flex-1 px-2 py-2 rounded-lg border text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                       theme.layout_config?.hero_style === s.id
                         ? "border-tf-black bg-tf-black text-white"
@@ -253,8 +258,8 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
               </div>
             </div>
             <div>
-              <p className="font-sans text-[12px] font-semibold text-tf-text mb-2">Grille produits</p>
-              <div className="flex gap-2">
+              <p id="theme-grid-style-label" className="font-sans text-[12px] font-semibold text-tf-text mb-2">Grille produits</p>
+              <div role="radiogroup" aria-labelledby="theme-grid-style-label" className="flex gap-2">
                 {[
                   { id: "2col", label: "2 colonnes" },
                   { id: "3col", label: "3 colonnes" },
@@ -263,7 +268,8 @@ export function VendeurThemeTab({ shopId }: ThemeTabProps) {
                   <button
                     key={g.id}
                     onClick={() => update({ layout_config: { ...theme.layout_config, grid_style: g.id as "2col" | "3col" | "masonry" } })}
-                    aria-pressed={theme.layout_config?.grid_style === g.id}
+                    role="radio"
+                    aria-checked={theme.layout_config?.grid_style === g.id}
                     className={`flex-1 px-2 py-2 rounded-lg border text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${
                       theme.layout_config?.grid_style === g.id
                         ? "border-tf-black bg-tf-black text-white"

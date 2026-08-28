@@ -44,7 +44,7 @@ export function ClientCommandesTab() {
         <Link
           key={order.id}
           href={`/commandes/${order.id}`}
-          className="block bg-white rounded-xl border border-tf-border p-4 hover:border-[rgba(201,168,76,0.4)] hover:shadow-card transition-all"
+          className="block bg-white rounded-xl border border-tf-border p-4 hover:border-tf-gold/40 hover:shadow-card transition-all"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">

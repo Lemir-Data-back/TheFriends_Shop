@@ -14,7 +14,7 @@ export default function LooksPage() {
 
       {/* Coming soon */}
       <div className="bg-white border border-tf-border rounded-2xl p-10 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-[rgba(201,168,76,0.1)] flex items-center justify-center mx-auto mb-5">
+        <div className="w-16 h-16 rounded-2xl bg-tf-gold/10 flex items-center justify-center mx-auto mb-5">
           <Sparkles size={28} className="text-tf-gold" />
         </div>
 
@@ -34,7 +34,7 @@ export default function LooksPage() {
             { icon: <ShoppingBag size={20} />, label: "Achète direct", desc: "Commande depuis un look" },
           ].map((f) => (
             <div key={f.label} className="bg-tf-bg border border-tf-border rounded-xl p-4 text-center">
-              <div className="w-9 h-9 rounded-lg bg-[rgba(201,168,76,0.1)] flex items-center justify-center mx-auto mb-2 text-tf-gold">
+              <div className="w-9 h-9 rounded-lg bg-tf-gold/10 flex items-center justify-center mx-auto mb-2 text-tf-gold">
                 {f.icon}
               </div>
               <p className="font-sans text-[13px] font-semibold text-tf-text mb-1">{f.label}</p>

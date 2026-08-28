@@ -108,7 +108,7 @@ export function VendeurClientsTab() {
 
       {/* Onglet interne */}
       <div className="bg-white rounded-xl border border-tf-border overflow-hidden">
-        <div className="flex border-b border-tf-border">
+        <div role="tablist" className="flex border-b border-tf-border">
           {[
             { id: "classement", label: "🏆 Classement" },
             { id: "inactifs",   label: `⏰ Inactifs (${data.clients_inactifs.length})` },

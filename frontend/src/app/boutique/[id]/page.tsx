@@ -33,7 +33,7 @@ function ScoreBarItem({ label, score }: { label: string; score: number }) {
             style={{
               backgroundColor: s <= Math.round(score)
                 ? theme.couleur_principale
-                : "#E8E4DC",
+                : "var(--tf-border)",
             }}
           />
         ))}

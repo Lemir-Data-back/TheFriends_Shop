@@ -46,7 +46,7 @@ const PLATFORM_SECTIONS = [
   {
     phase: 2,
     phaseLabel: "Phase 2 — Différenciation",
-    phaseColor: "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark",
+    phaseColor: "bg-tf-gold/[0.15] text-tf-gold-dark",
     title: "En développement — actuellement caché",
     sections: [
       {
@@ -156,7 +156,7 @@ export default function FonctionnalitesPage() {
                 <div
                   key={section.name}
                   className={`bg-white border rounded-xl p-5 flex flex-col gap-3 transition-all ${
-                    active ? "border-[rgba(45,106,79,0.3)] shadow-sm" : "border-tf-border"
+                    active ? "border-tf-success/30 shadow-sm" : "border-tf-border"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">

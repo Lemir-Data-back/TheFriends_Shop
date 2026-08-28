@@ -278,55 +278,56 @@ export function ProductForm({ mode, productId }: { mode: "create" | "edit"; prod
       {/* Infos principales */}
       <div className="bg-white rounded-xl border border-tf-border p-5 space-y-4">
         <div>
-          <label className="input-label">Titre *</label>
-          <input className="input-field" value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Ex. Robe wax portefeuille" required />
+          <label htmlFor="product-titre" className="input-label">Titre *</label>
+          <input id="product-titre" className="input-field" value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Ex. Robe wax portefeuille" required />
         </div>
         <div>
-          <label className="input-label">Description</label>
-          <textarea className="input-field" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Décris l'article, la matière, la coupe..." />
+          <label htmlFor="product-description" className="input-label">Description</label>
+          <textarea id="product-description" className="input-field" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Décris l'article, la matière, la coupe..." />
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div>
-            <label className="input-label">Catégorie *</label>
-            <select className="input-field" value={categorie} onChange={(e) => setCategorie(e.target.value as ProductCategorie)}>
+            <label htmlFor="product-categorie" className="input-label">Catégorie *</label>
+            <select id="product-categorie" className="input-field" value={categorie} onChange={(e) => setCategorie(e.target.value as ProductCategorie)}>
               {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="input-label">Occasion</label>
-            <select className="input-field" value={occasion} onChange={(e) => setOccasion(e.target.value as ProductOccasion)}>
+            <label htmlFor="product-occasion" className="input-label">Occasion</label>
+            <select id="product-occasion" className="input-field" value={occasion} onChange={(e) => setOccasion(e.target.value as ProductOccasion)}>
               <option value="">—</option>
               {OCCASIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="input-label">Tissu</label>
-            <select className="input-field" value={tissu} onChange={(e) => setTissu(e.target.value)}>
+            <label htmlFor="product-tissu" className="input-label">Tissu</label>
+            <select id="product-tissu" className="input-field" value={tissu} onChange={(e) => setTissu(e.target.value)}>
               <option value="">—</option>
               {TISSUS.map((t) => <option key={t} value={t.toLowerCase()}>{t}</option>)}
             </select>
           </div>
         </div>
         <div>
-          <label className="input-label">Style</label>
-          <input className="input-field" value={style} onChange={(e) => setStyle(e.target.value)} placeholder="Ex. portefeuille, ample, ajusté..." />
+          <label htmlFor="product-style" className="input-label">Style</label>
+          <input id="product-style" className="input-field" value={style} onChange={(e) => setStyle(e.target.value)} placeholder="Ex. portefeuille, ample, ajusté..." />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="input-label">Prix (FCFA) *</label>
-            <input className="input-field" type="number" min={1} value={prix} onChange={(e) => setPrix(e.target.value)} required />
+            <label htmlFor="product-prix" className="input-label">Prix (FCFA) *</label>
+            <input id="product-prix" className="input-field" type="number" min={1} value={prix} onChange={(e) => setPrix(e.target.value)} required />
           </div>
           <div>
-            <label className="input-label">Prix promo (FCFA)</label>
-            <input className="input-field" type="number" min={1} value={prixPromo} onChange={(e) => setPrixPromo(e.target.value)} placeholder="Optionnel" />
+            <label htmlFor="product-prix-promo" className="input-label">Prix promo (FCFA)</label>
+            <input id="product-prix-promo" className="input-field" type="number" min={1} value={prixPromo} onChange={(e) => setPrixPromo(e.target.value)} placeholder="Optionnel" />
           </div>
         </div>
 
         {/* Tags */}
         <div>
-          <label className="input-label">Tags</label>
+          <label htmlFor="product-tag-input" className="input-label">Tags</label>
           <div className="flex gap-2">
             <input
+              id="product-tag-input"
               className="input-field"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
@@ -359,8 +360,8 @@ export function ProductForm({ mode, productId }: { mode: "create" | "edit"; prod
 
         {isSurMesure && (
           <div>
-            <label className="input-label">Prix plancher négociable (optionnel)</label>
-            <input className="input-field" type="number" min={1} value={prixPlancher} onChange={(e) => setPrixPlancher(e.target.value)} placeholder="Ex. 30000" />
+            <label htmlFor="product-prix-plancher" className="input-label">Prix plancher négociable (optionnel)</label>
+            <input id="product-prix-plancher" className="input-field" type="number" min={1} value={prixPlancher} onChange={(e) => setPrixPlancher(e.target.value)} placeholder="Ex. 30000" />
             <p className="font-sans text-[11px] text-tf-text-muted mt-1.5">
               Le prix en dessous duquel tu n&apos;acceptes pas de négocier avec un client. Laisse vide pour négocier librement, sans plancher imposé par la plateforme.
             </p>
@@ -386,9 +387,9 @@ export function ProductForm({ mode, productId }: { mode: "create" | "edit"; prod
           <div className="space-y-2">
             {tailleRows.map((row, i) => (
               <div key={i} className="flex gap-2 items-center">
-                <input className="input-field !py-2 w-20" placeholder="Taille" value={row.taille} onChange={(e) => setTailleRows(tailleRows.map((r, j) => j === i ? { ...r, taille: e.target.value } : r))} />
-                <input className="input-field !py-2" placeholder="Poitrine (ex. 80-84)" value={row.poitrine} onChange={(e) => setTailleRows(tailleRows.map((r, j) => j === i ? { ...r, poitrine: e.target.value } : r))} />
-                <input className="input-field !py-2" placeholder="Taille en cm (ex. 60-64)" value={row.tailleCm} onChange={(e) => setTailleRows(tailleRows.map((r, j) => j === i ? { ...r, tailleCm: e.target.value } : r))} />
+                <input aria-label="Taille" className="input-field !py-2 w-20" placeholder="Taille" value={row.taille} onChange={(e) => setTailleRows(tailleRows.map((r, j) => j === i ? { ...r, taille: e.target.value } : r))} />
+                <input aria-label="Tour de poitrine" className="input-field !py-2" placeholder="Poitrine (ex. 80-84)" value={row.poitrine} onChange={(e) => setTailleRows(tailleRows.map((r, j) => j === i ? { ...r, poitrine: e.target.value } : r))} />
+                <input aria-label="Taille en cm" className="input-field !py-2" placeholder="Taille en cm (ex. 60-64)" value={row.tailleCm} onChange={(e) => setTailleRows(tailleRows.map((r, j) => j === i ? { ...r, tailleCm: e.target.value } : r))} />
                 <button type="button" onClick={() => setTailleRows(tailleRows.filter((_, j) => j !== i))} aria-label="Supprimer cette taille" className="text-tf-text-muted hover:text-tf-error shrink-0">
                   <X size={16} />
                 </button>
@@ -416,9 +417,9 @@ export function ProductForm({ mode, productId }: { mode: "create" | "edit"; prod
           <div className="space-y-2">
             {stockRows.map((row, i) => (
               <div key={i} className="flex gap-2 items-center">
-                <input className="input-field !py-2 w-20" placeholder="Taille" value={row.taille} onChange={(e) => setStockRows(stockRows.map((r, j) => j === i ? { ...r, taille: e.target.value } : r))} />
-                <input className="input-field !py-2" placeholder="Couleur" value={row.couleur} onChange={(e) => setStockRows(stockRows.map((r, j) => j === i ? { ...r, couleur: e.target.value } : r))} />
-                <input className="input-field !py-2 w-24" type="number" min={0} placeholder="Qté" value={row.quantite} onChange={(e) => setStockRows(stockRows.map((r, j) => j === i ? { ...r, quantite: e.target.value } : r))} />
+                <input aria-label="Taille" className="input-field !py-2 w-20" placeholder="Taille" value={row.taille} onChange={(e) => setStockRows(stockRows.map((r, j) => j === i ? { ...r, taille: e.target.value } : r))} />
+                <input aria-label="Couleur" className="input-field !py-2" placeholder="Couleur" value={row.couleur} onChange={(e) => setStockRows(stockRows.map((r, j) => j === i ? { ...r, couleur: e.target.value } : r))} />
+                <input aria-label="Quantité" className="input-field !py-2 w-24" type="number" min={0} placeholder="Qté" value={row.quantite} onChange={(e) => setStockRows(stockRows.map((r, j) => j === i ? { ...r, quantite: e.target.value } : r))} />
                 <button type="button" onClick={() => setStockRows(stockRows.filter((_, j) => j !== i))} aria-label="Supprimer cette ligne" className="text-tf-text-muted hover:text-tf-error shrink-0">
                   <X size={16} />
                 </button>
@@ -428,8 +429,9 @@ export function ProductForm({ mode, productId }: { mode: "create" | "edit"; prod
         )}
 
         <div className="mt-4 pt-4 border-t border-tf-border">
-          <label className="input-label">Seuil d&apos;alerte stock faible</label>
+          <label htmlFor="product-seuil-stock" className="input-label">Seuil d&apos;alerte stock faible</label>
           <input
+            id="product-seuil-stock"
             className="input-field w-32"
             type="number"
             min={0}
@@ -443,7 +445,7 @@ export function ProductForm({ mode, productId }: { mode: "create" | "edit"; prod
         </div>
       </div>
 
-      {error && <p className="font-sans text-[13px] text-tf-error">{error}</p>}
+      {error && <p role="alert" className="font-sans text-[13px] text-tf-error">{error}</p>}
 
       <div className="flex gap-3">
         <button type="submit" disabled={saving} className="btn-gold flex-1 flex items-center justify-center gap-2">

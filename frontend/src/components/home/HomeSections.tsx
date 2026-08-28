@@ -168,12 +168,15 @@ function ActorTabs() {
     <div>
       {/* Sélecteur */}
       <div className="flex justify-center mb-12">
-        <div className="inline-flex bg-tf-gray-soft rounded-full p-1 gap-1">
+        <div role="tablist" aria-label="Choisir un profil" className="inline-flex bg-tf-gray-soft rounded-full p-1 gap-1">
           {ACTORS.map((a) => (
             <button
               key={a.id}
+              id={`actor-tab-${a.id}`}
               onClick={() => setActive(a.id)}
-              aria-pressed={active === a.id}
+              role="tab"
+              aria-selected={active === a.id}
+              aria-controls="actor-tabpanel"
               className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2 ${
                 active === a.id
                   ? "bg-tf-black text-white shadow-sm"
@@ -188,7 +191,7 @@ function ActorTabs() {
       </div>
 
       {/* Contenu */}
-      <div key={active} className="animate-fade-in">
+      <div key={active} id="actor-tabpanel" role="tabpanel" aria-labelledby={`actor-tab-${active}`} className="animate-fade-in">
         <div className="text-center mb-10 max-w-2xl mx-auto">
           <h3 className="font-serif text-h1 text-tf-text mb-3">{actor.headline}</h3>
           <p className="font-sans text-body text-tf-text-muted leading-relaxed">{actor.sub}</p>
@@ -737,12 +740,15 @@ function IntelligenceSection() {
     <div>
       {/* Sélecteur */}
       <div className="flex justify-center mb-12">
-        <div className="inline-flex bg-tf-gray-soft rounded-full p-1 gap-1">
+        <div role="tablist" aria-label="Choisir un profil" className="inline-flex bg-tf-gray-soft rounded-full p-1 gap-1">
           {INTELLIGENCE.map((a) => (
             <button
               key={a.id}
+              id={`intelligence-tab-${a.id}`}
               onClick={() => setActive(a.id)}
-              aria-pressed={active === a.id}
+              role="tab"
+              aria-selected={active === a.id}
+              aria-controls="intelligence-tabpanel"
               className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2 ${
                 active === a.id
                   ? "bg-tf-black text-white shadow-sm"
@@ -757,7 +763,7 @@ function IntelligenceSection() {
       </div>
 
       {/* Contenu 2 colonnes */}
-      <div key={active} className="animate-fade-in">
+      <div key={active} id="intelligence-tabpanel" role="tabpanel" aria-labelledby={`intelligence-tab-${active}`} className="animate-fade-in">
         <div className="text-center mb-10 max-w-2xl mx-auto">
           <h3 className="font-serif text-h1 text-tf-text mb-3">{actor.headline}</h3>
           <p className="font-sans text-body text-tf-text-muted leading-relaxed">{actor.sub}</p>

@@ -1,17 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: "../fonts/inter-variable.woff2",
+  weight: "100 900",
   variable: "--font-inter",
   display: "swap",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+const ibmPlexMono = localFont({
+  src: [
+    { path: "../fonts/ibm-plex-mono-400.woff2", weight: "400" },
+    { path: "../fonts/ibm-plex-mono-500.woff2", weight: "500" },
+    { path: "../fonts/ibm-plex-mono-600.woff2", weight: "600" },
+  ],
   variable: "--font-plex-mono",
   display: "swap",
 });

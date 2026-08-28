@@ -23,7 +23,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
     <article
       className={cn(
         "group relative bg-white rounded-xl border border-tf-border overflow-hidden",
-        "transition-all duration-150 ease hover:border-[rgba(201,168,76,0.4)] hover:shadow-card",
+        "transition-all duration-150 ease hover:border-tf-gold/40 hover:shadow-card",
         "hover:-translate-y-0.5",
         className
       )}
@@ -61,7 +61,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Bouton like */}
         <button
           onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
-          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold"
+          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold before:absolute before:-inset-1.5 before:content-['']"
           aria-pressed={liked}
           aria-label={liked ? "Retirer des favoris" : "Ajouter aux favoris"}
         >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { api, getApiErrorMessage } from "@/lib/api";
@@ -28,8 +28,13 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const firstStep2FieldRef = useRef<HTMLInputElement>(null);
 
   const isSeller = role === "couturier" || role === "vendeur";
+
+  useEffect(() => {
+    if (step === 2) firstStep2FieldRef.current?.focus();
+  }, [step]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,7 +80,7 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full max-w-sm bg-white rounded-xl border border-tf-border p-8">
-        <h2 className="font-sans text-h3 font-semibold text-tf-text mb-1">Créer un compte</h2>
+        <h1 className="font-sans text-h3 font-semibold text-tf-text mb-1">Créer un compte</h1>
         <p className="font-sans text-[13px] text-tf-text-muted mb-6">
           Étape {step} sur 2
         </p>
@@ -83,18 +88,20 @@ export default function RegisterPage() {
         {/* Étape 1 : Choix du rôle */}
         {step === 1 && (
           <div className="space-y-3">
-            <p className="font-sans text-[13px] font-medium text-tf-text mb-3">
+            <p id="register-role-label" className="font-sans text-[13px] font-medium text-tf-text mb-3">
               Tu es...
             </p>
+            <div role="radiogroup" aria-labelledby="register-role-label" className="space-y-3">
             {ROLES.map((r) => (
               <button
                 key={r.value}
                 type="button"
                 onClick={() => setRole(r.value)}
-                aria-pressed={role === r.value}
+                role="radio"
+                aria-checked={role === r.value}
                 className={`w-full text-left p-4 rounded-lg border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold focus-visible:ring-offset-2 ${
                   role === r.value
-                    ? "border-tf-gold bg-[rgba(201,168,76,0.06)]"
+                    ? "border-tf-gold bg-tf-gold/[0.06]"
                     : "border-tf-border hover:border-tf-text"
                 }`}
               >
@@ -115,6 +122,7 @@ export default function RegisterPage() {
                 </span>
               </button>
             ))}
+            </div>
 
             <div className="flex gap-3 mt-2">
               <button
@@ -139,7 +147,7 @@ export default function RegisterPage() {
         {step === 2 && (
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 bg-tf-error-bg border border-tf-error rounded-md">
+              <div role="alert" className="p-3 bg-tf-error-bg border border-tf-error rounded-md">
                 <p className="font-sans text-[13px] text-tf-error">{error}</p>
               </div>
             )}
@@ -151,6 +159,7 @@ export default function RegisterPage() {
                 </label>
                 <input
                   id="register-shop-nom"
+                  ref={firstStep2FieldRef}
                   type="text"
                   className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
                   placeholder={role === "couturier" ? "Atelier Awa Couture" : "Awa Boutique"}
@@ -167,6 +176,7 @@ export default function RegisterPage() {
               </label>
               <input
                 id="register-fullname"
+                ref={isSeller ? undefined : firstStep2FieldRef}
                 type="text"
                 autoComplete="name"
                 className="w-full px-3 py-2.5 rounded-md border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold transition-colors"
@@ -228,7 +238,7 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 rounded-md text-tf-text-muted hover:text-tf-text transition-colors"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 rounded-md text-tf-text-muted hover:text-tf-text transition-colors before:absolute before:-inset-1.5 before:content-['']"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>

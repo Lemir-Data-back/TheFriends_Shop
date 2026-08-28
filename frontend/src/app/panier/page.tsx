@@ -13,9 +13,10 @@ import { CartVendeurGroup } from "@/types/cart";
 
 export default function PanierPage() {
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, _hasHydrated } = useAuthStore();
   const { cart, isLoading, updateItem, removeItem, clearCart } = useCart();
   const [commandeEnCours, setCommandeEnCours] = useState<number | null>(null);
+  const [commandeErrorShopId, setCommandeErrorShopId] = useState<number | null>(null);
 
   async function handleCommander(groupe: CartVendeurGroup) {
     if (!isAuthenticated) {
@@ -23,6 +24,7 @@ export default function PanierPage() {
       return;
     }
 
+    setCommandeErrorShopId(null);
     setCommandeEnCours(groupe.shop_id);
     try {
       const { data } = await api.post("/orders", {
@@ -37,13 +39,13 @@ export default function PanierPage() {
       });
       router.push(`/commandes/${data.id}`);
     } catch {
-      alert("Erreur lors de la commande. Réessaie.");
+      setCommandeErrorShopId(groupe.shop_id);
     } finally {
       setCommandeEnCours(null);
     }
   }
 
-  if (isLoading) {
+  if (!_hasHydrated || isLoading) {
     return (
       <div className="min-h-screen bg-tf-bg">
         <div className="max-w-screen-md mx-auto px-4 py-10">
@@ -69,7 +71,10 @@ export default function PanierPage() {
           </Link>
           <h1 className="font-sans text-h2 font-bold text-tf-text">Mon panier</h1>
           {!isEmpty && (
-            <span className="bg-tf-gold text-tf-black text-[12px] font-bold px-2 py-0.5 rounded-full">
+            <span
+              aria-label={`${cart.nb_articles} article${cart.nb_articles > 1 ? "s" : ""} dans le panier`}
+              className="bg-tf-gold text-tf-black text-[12px] font-bold px-2 py-0.5 rounded-full"
+            >
               {cart.nb_articles}
             </span>
           )}
@@ -163,7 +168,7 @@ export default function PanierPage() {
                             </div>
 
                             <div className="flex items-center gap-3">
-                              <span className="font-sans text-[15px] font-bold text-tf-black">
+                              <span className="font-mono text-[15px] font-bold text-tf-black">
                                 {formatPrix(item.sous_total)}
                               </span>
                               <button
@@ -185,7 +190,7 @@ export default function PanierPage() {
                     <span className="font-sans text-[13px] text-tf-text-muted">
                       Sous-total
                     </span>
-                    <span className="font-sans text-[14px] font-bold text-tf-text">
+                    <span className="font-mono text-[14px] font-bold text-tf-text">
                       {formatPrix(groupe.sous_total_boutique)}
                     </span>
                   </div>
@@ -199,6 +204,9 @@ export default function PanierPage() {
                     >
                       {commandeEnCours === groupe.shop_id ? "Commande en cours..." : `Commander chez ${groupe.shop_nom}`}
                     </button>
+                    {commandeErrorShopId === groupe.shop_id && (
+                      <p role="alert" className="font-sans text-[12px] text-tf-error mt-2">Erreur lors de la commande. Réessaie.</p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -222,7 +230,7 @@ export default function PanierPage() {
                   {cart.groupes.map((g) => (
                     <div key={g.shop_id} className="flex justify-between">
                       <span className="font-sans text-[13px] text-tf-text-muted truncate max-w-[140px]">{g.shop_nom}</span>
-                      <span className="font-sans text-[13px] text-tf-text">{formatPrix(g.sous_total_boutique)}</span>
+                      <span className="font-mono text-[13px] text-tf-text">{formatPrix(g.sous_total_boutique)}</span>
                     </div>
                   ))}
                 </div>

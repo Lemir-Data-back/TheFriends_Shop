@@ -77,8 +77,8 @@ export default function LitigesPage() {
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSelected(null)} />
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-            <h3 className="font-sans text-[16px] font-bold text-tf-text">Arbitrage — {selected.reference}</h3>
+          <div role="dialog" aria-modal="true" aria-labelledby="arbitrage-title" className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+            <h3 id="arbitrage-title" className="font-sans text-[16px] font-bold text-tf-text">Arbitrage — {selected.reference}</h3>
             <div className="bg-tf-gray-soft rounded-lg p-3 space-y-1">
               <p className="font-sans text-[12px] text-tf-text">Client : <strong>{selected.client_nom}</strong></p>
               <p className="font-sans text-[12px] text-tf-text">Boutique : <strong>{selected.shop_nom}</strong></p>
@@ -88,7 +88,7 @@ export default function LitigesPage() {
               {[
                 { verdict: "rembourser_client", label: "Rembourser le client",  sub: "100% retourné au client",               color: "border-tf-error hover:bg-tf-error-bg",                          text: "text-tf-error" },
                 { verdict: "payer_vendeur",      label: "Payer le vendeur",      sub: "100% libéré au vendeur",                color: "border-tf-success hover:bg-tf-success-bg",                      text: "text-tf-success" },
-                { verdict: "partager",           label: "Partage 50/50",         sub: "Remboursement partiel des deux côtés",  color: "border-tf-gold hover:bg-[rgba(201,168,76,0.06)]",               text: "text-tf-gold-dark" },
+                { verdict: "partager",           label: "Partage 50/50",         sub: "Remboursement partiel des deux côtés",  color: "border-tf-gold hover:bg-tf-gold/[0.06]",               text: "text-tf-gold-dark" },
               ].map(v => (
                 <button
                   key={v.verdict}
@@ -102,8 +102,9 @@ export default function LitigesPage() {
               ))}
             </div>
             <div>
-              <label className="font-sans text-[11px] font-bold text-tf-text-muted uppercase tracking-wider block mb-1.5">Note admin (optionnel)</label>
+              <label htmlFor="litige-note" className="font-sans text-[11px] font-bold text-tf-text-muted uppercase tracking-wider block mb-1.5">Note admin (optionnel)</label>
               <textarea
+                id="litige-note"
                 value={note}
                 onChange={e => setNote(e.target.value)}
                 placeholder="Justification de la décision..."

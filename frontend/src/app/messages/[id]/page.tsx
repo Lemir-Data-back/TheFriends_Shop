@@ -80,7 +80,7 @@ export default function ChatPage() {
           <span className="font-serif text-[13px] text-tf-gold">{conv?.shop_nom?.[0] ?? "?"}</span>
         </div>
         <div>
-          <p className="font-sans text-[14px] font-semibold text-tf-text leading-none">{conv?.shop_nom ?? "..."}</p>
+          <h1 className="font-sans text-[14px] font-semibold text-tf-text leading-none">{conv?.shop_nom ?? "..."}</h1>
           {conv?.order_id && (
             <Link href={`/commandes/${conv.order_id}`} className="font-sans text-[11px] text-tf-gold hover:underline">
               Commande liée

@@ -155,7 +155,7 @@ export function CatalogueStockTab({ shopId, role = "vendeur" }: CatalogueStockTa
                 <Link
                   href={`/boutique/produits/${p.id}/modifier`}
                   aria-label={`Modifier ${p.titre}`}
-                  className="shrink-0 w-8 h-8 flex items-center justify-center rounded-md text-tf-text-muted hover:text-tf-gold-dark hover:bg-tf-gray-soft transition-colors"
+                  className="relative shrink-0 w-8 h-8 flex items-center justify-center rounded-md text-tf-text-muted hover:text-tf-gold-dark hover:bg-tf-gray-soft transition-colors before:absolute before:-inset-1.5 before:content-['']"
                 >
                   <Pencil size={14} />
                 </Link>

@@ -44,7 +44,7 @@ export default function BoutiquesPage() {
         <div className="flex-1 min-w-48">
           <SearchBar value={search} onChange={setSearch} placeholder="Rechercher une boutique..." />
         </div>
-        <div className="flex gap-1 bg-tf-gray-soft rounded-lg p-1">
+        <div role="radiogroup" aria-label="Filtrer les boutiques" className="flex gap-1 bg-tf-gray-soft rounded-lg p-1">
           {[
             { id: "pending", label: "En attente" },
             { id: "active",  label: "Actives" },
@@ -53,7 +53,8 @@ export default function BoutiquesPage() {
             <button
               key={f.id}
               onClick={() => setFilter(f.id as typeof filter)}
-              aria-pressed={filter === f.id}
+              role="radio"
+              aria-checked={filter === f.id}
               className={`px-4 py-1.5 rounded-md font-sans text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${filter === f.id ? "bg-white text-tf-black shadow-sm" : "text-tf-text-muted hover:text-tf-text"}`}
             >
               {f.label}
@@ -82,9 +83,9 @@ export default function BoutiquesPage() {
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="font-sans text-[13px] font-semibold text-tf-text truncate">{s.nom}</p>
                     <Badge color="bg-tf-gray-soft text-tf-text-muted">{TYPE_LABELS[s.type] ?? s.type}</Badge>
-                    {!s.is_validated && <Badge color="bg-[#FFF3CD] text-[#B8892A]">En attente</Badge>}
+                    {!s.is_validated && <Badge color="bg-tf-warning-bg text-tf-warning">En attente</Badge>}
                     {s.is_validated && !s.is_active && <Badge color="bg-tf-error-bg text-tf-error">Suspendue</Badge>}
-                    {s.badges?.couturier_fiable && <Badge color="bg-[rgba(201,168,76,0.15)] text-tf-gold-dark">Fiable</Badge>}
+                    {s.badges?.couturier_fiable && <Badge color="bg-tf-gold/[0.15] text-tf-gold-dark">Fiable</Badge>}
                   </div>
                   <p className="font-sans text-[11px] text-tf-text-muted">
                     {s.owner_name} · {s.zone ?? "Zone inconnue"} · {s.nb_commandes} commandes · Score {s.score_moyen.toFixed(1)}/5
@@ -95,7 +96,7 @@ export default function BoutiquesPage() {
                     <button
                       onClick={() => validateShop.mutate(s.id)}
                       disabled={validateShop.isPending}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-tf-success text-white rounded-lg font-sans font-bold text-[11px] hover:bg-[#25593f] transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-tf-success text-white rounded-lg font-sans font-bold text-[11px] hover:bg-tf-success-dark transition-colors disabled:opacity-50"
                     >
                       <CheckCircle size={12} /> Valider
                     </button>
@@ -130,7 +131,7 @@ export default function BoutiquesPage() {
                       <button
                         onClick={() => setBadgeFiable.mutate({ id: s.id, certifie: true })}
                         disabled={setBadgeFiable.isPending}
-                        className="flex items-center gap-1.5 px-3 py-1.5 border border-tf-gold text-tf-gold-dark rounded-lg font-sans font-bold text-[11px] hover:bg-[rgba(201,168,76,0.1)] transition-colors disabled:opacity-50"
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-tf-gold text-tf-gold-dark rounded-lg font-sans font-bold text-[11px] hover:bg-tf-gold/10 transition-colors disabled:opacity-50"
                       >
                         <ShieldCheck size={12} /> Certifier fiable
                       </button>

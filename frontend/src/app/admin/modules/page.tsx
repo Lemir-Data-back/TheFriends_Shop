@@ -6,7 +6,7 @@ import { api } from "@/lib/api"
 import { Badge } from "../_components/shared"
 import type { ModuleStatus, EntityModuleStatus } from "../_components/types"
 
-const PHASE_COLOR = ["", "bg-tf-gray-soft text-tf-text", "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark", "bg-tf-success-bg text-tf-success"]
+const PHASE_COLOR = ["", "bg-tf-gray-soft text-tf-text", "bg-tf-gold/[0.15] text-tf-gold-dark", "bg-tf-success-bg text-tf-success"]
 
 export default function ModulesPage() {
   const qc = useQueryClient()
@@ -80,6 +80,7 @@ export default function ModulesPage() {
         <div className="flex gap-3 mb-4">
           <input
             type="number"
+            aria-label="ID de la boutique"
             placeholder="ID de la boutique..."
             value={shopId}
             onChange={e => setShopId(e.target.value)}

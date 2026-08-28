@@ -64,7 +64,7 @@ export default function MessagesPage() {
               <Link
                 key={conv.id}
                 href={`/messages/${conv.id}`}
-                className="flex items-start gap-4 bg-white rounded-xl border border-tf-border p-4 hover:border-[rgba(201,168,76,0.4)] hover:shadow-card transition-all"
+                className="flex items-start gap-4 bg-white rounded-xl border border-tf-border p-4 hover:border-tf-gold/40 hover:shadow-card transition-all"
               >
                 {/* Avatar boutique */}
                 <div className="w-10 h-10 rounded-full bg-tf-black flex items-center justify-center flex-shrink-0">
@@ -88,7 +88,10 @@ export default function MessagesPage() {
                 </div>
 
                 {conv.nb_non_lus > 0 && (
-                  <span className="bg-tf-gold text-tf-black text-[11px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  <span
+                    aria-label={`${conv.nb_non_lus} message${conv.nb_non_lus > 1 ? "s" : ""} non lu${conv.nb_non_lus > 1 ? "s" : ""}`}
+                    className="bg-tf-gold text-tf-black text-[11px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                  >
                     {conv.nb_non_lus}
                   </span>
                 )}

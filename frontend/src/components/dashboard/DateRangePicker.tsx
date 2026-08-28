@@ -45,6 +45,15 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
 
   useEffect(() => { setLocal(value) }, [value])
 
+  useEffect(() => {
+    if (!open) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [open])
+
   function apply() {
     if (local.debut && local.fin && local.debut <= local.fin) {
       onChange(local)
@@ -79,7 +88,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
                 <button
                   key={p.label}
                   onClick={() => { const r = p.getRange(); setLocal(r); onChange(r); setOpen(false) }}
-                  className="px-2.5 py-1 rounded-full bg-tf-gray-soft font-sans text-[11px] font-semibold text-tf-text hover:bg-[rgba(201,168,76,0.15)] hover:text-tf-gold-dark transition-colors"
+                  className="px-2.5 py-1 rounded-full bg-tf-gray-soft font-sans text-[11px] font-semibold text-tf-text hover:bg-tf-gold/[0.15] hover:text-tf-gold-dark transition-colors"
                 >
                   {p.label}
                 </button>

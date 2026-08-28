@@ -89,7 +89,7 @@ export function CouturierClientsTab() {
 
       {/* Table principale */}
       <div className="bg-white rounded-xl border border-tf-border overflow-hidden">
-        <div className="flex border-b border-tf-border overflow-x-auto">
+        <div role="tablist" className="flex border-b border-tf-border overflow-x-auto">
           {[
             { id: "classement", label: "🏆 Classement" },
             { id: "attente",    label: `⚠️ En attente (${data.clients_en_attente.length})` },

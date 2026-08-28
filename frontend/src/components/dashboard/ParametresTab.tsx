@@ -106,9 +106,11 @@ function ChangerMotDePasse() {
       </div>
 
       <div>
-        <label className="input-label">Mot de passe actuel</label>
+        <label htmlFor="parametres-current-password" className="input-label">Mot de passe actuel</label>
         <input
+          id="parametres-current-password"
           type="password"
+          autoComplete="current-password"
           className="input-field"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
@@ -117,9 +119,11 @@ function ChangerMotDePasse() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="input-label">Nouveau mot de passe</label>
+          <label htmlFor="parametres-new-password" className="input-label">Nouveau mot de passe</label>
           <input
+            id="parametres-new-password"
             type="password"
+            autoComplete="new-password"
             className="input-field"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
@@ -128,9 +132,11 @@ function ChangerMotDePasse() {
           />
         </div>
         <div>
-          <label className="input-label">Confirmer le nouveau mot de passe</label>
+          <label htmlFor="parametres-confirm-password" className="input-label">Confirmer le nouveau mot de passe</label>
           <input
+            id="parametres-confirm-password"
             type="password"
+            autoComplete="new-password"
             className="input-field"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -140,8 +146,8 @@ function ChangerMotDePasse() {
         </div>
       </div>
 
-      {error && <p className="font-sans text-[13px] text-tf-error">{error}</p>}
-      {success && <p className="font-sans text-[13px] text-tf-success">Mot de passe mis à jour ✓</p>}
+      {error && <p role="alert" className="font-sans text-[13px] text-tf-error">{error}</p>}
+      {success && <p role="status" className="font-sans text-[13px] text-tf-success">Mot de passe mis à jour ✓</p>}
 
       <button
         type="submit"
@@ -188,9 +194,9 @@ export function ParametresTab({ shopId, role = "vendeur" }: ParametresTabProps) 
         <button
           type="button"
           onClick={() => setShowLogout(true)}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-tf-text-muted hover:bg-[#FFF0F0] hover:text-[#C0392B] transition-all group"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-tf-text-muted hover:bg-tf-error-soft hover:text-tf-error transition-all group"
         >
-          <LogOut size={18} className="shrink-0 group-hover:text-[#C0392B]" />
+          <LogOut size={18} className="shrink-0 group-hover:text-tf-error" />
           <span className="font-sans text-[13px] font-medium">Se déconnecter</span>
         </button>
       </div>

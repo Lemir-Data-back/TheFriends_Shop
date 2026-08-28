@@ -134,7 +134,7 @@ export function CartDrawer() {
                               {[item.taille, item.couleur].filter(Boolean).join(" · ")}
                             </p>
                           )}
-                          <p className="font-sans text-[13px] font-bold text-tf-gold mt-1">
+                          <p className="font-mono text-[13px] font-bold text-tf-gold mt-1">
                             {formatPrix(item.prix_effectif)}
                           </p>
 
@@ -173,7 +173,7 @@ export function CartDrawer() {
 
                   <div className="flex justify-between mt-2 px-1">
                     <span className="font-sans text-[12px] text-tf-text-muted">Sous-total {groupe.shop_nom}</span>
-                    <span className="font-sans text-[12px] font-semibold text-tf-text">
+                    <span className="font-mono text-[12px] font-semibold text-tf-text">
                       {formatPrix(groupe.sous_total_boutique)}
                     </span>
                   </div>

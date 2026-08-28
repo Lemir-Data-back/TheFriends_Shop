@@ -32,6 +32,7 @@ const config: Config = {
         // Sémantiques
         "tf-success": "#2D6A4F",
         "tf-success-bg": "#D8F3DC",
+        "tf-success-dark": "#25593F",
         "tf-error": "#C0392B",
         "tf-error-bg": "#FFCCCC",
         "tf-error-soft": "#FFF0F0",

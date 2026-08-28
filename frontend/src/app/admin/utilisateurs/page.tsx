@@ -9,7 +9,7 @@ import type { UserAdmin } from "../_components/types"
 
 const ROLE_COLORS: Record<string, string> = {
   client:    "bg-tf-gray-soft text-tf-text",
-  couturier: "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark",
+  couturier: "bg-tf-gold/[0.15] text-tf-gold-dark",
   vendeur:   "bg-tf-success-bg text-tf-success",
   admin:     "bg-tf-black text-white",
 }
@@ -61,24 +61,26 @@ export default function UtilisateursPage() {
         <div className="flex-1 min-w-48">
           <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom, email, téléphone..." />
         </div>
-        <div className="flex gap-1 bg-tf-gray-soft rounded-lg p-1 shrink-0">
+        <div role="radiogroup" aria-label="Filtrer par rôle" className="flex gap-1 bg-tf-gray-soft rounded-lg p-1 shrink-0">
           {ROLE_PILLS.map(r => (
             <button
               key={r.value}
               onClick={() => setRoleFilter(r.value)}
-              aria-pressed={roleFilter === r.value}
+              role="radio"
+              aria-checked={roleFilter === r.value}
               className={`px-3 py-1.5 rounded-md font-sans text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${roleFilter === r.value ? "bg-white text-tf-black shadow-sm" : "text-tf-text-muted hover:text-tf-text"}`}
             >
               {r.label}
             </button>
           ))}
         </div>
-        <div className="flex gap-1 bg-tf-gray-soft rounded-lg p-1 shrink-0">
+        <div role="radiogroup" aria-label="Filtrer par statut" className="flex gap-1 bg-tf-gray-soft rounded-lg p-1 shrink-0">
           {STATUS_PILLS.map(s => (
             <button
               key={s.value}
               onClick={() => setActiveFilter(s.value as "" | "true" | "false")}
-              aria-pressed={activeFilter === s.value}
+              role="radio"
+              aria-checked={activeFilter === s.value}
               className={`px-3 py-1.5 rounded-md font-sans text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-gold ${activeFilter === s.value ? "bg-white text-tf-black shadow-sm" : "text-tf-text-muted hover:text-tf-text"}`}
             >
               {s.label}
@@ -89,6 +91,8 @@ export default function UtilisateursPage() {
 
       {/* Table */}
       <div className="bg-white rounded-xl border border-tf-border overflow-hidden">
+        <div className="overflow-x-auto">
+        <div className="min-w-[720px]">
         <div className="grid grid-cols-12 gap-2 px-5 py-3 bg-tf-bg border-b border-tf-border">
           {["Utilisateur", "Rôle", "Score", "Commandes", "Statut", "Actions"].map((h, i) => (
             <span key={h} className={`font-sans text-[10px] font-bold text-tf-text-muted uppercase ${i === 0 ? "col-span-4" : i === 5 ? "col-span-2" : "col-span-1"}`}>{h}</span>
@@ -146,17 +150,19 @@ export default function UtilisateursPage() {
             ))}
           </div>
         )}
+        </div>
+        </div>
       </div>
 
       {/* Modal modification */}
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSelected(null)} />
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
-            <h3 className="font-sans text-[16px] font-bold text-tf-text">Modifier — {selected.full_name}</h3>
+          <div role="dialog" aria-modal="true" aria-labelledby="modifier-user-title" className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+            <h3 id="modifier-user-title" className="font-sans text-[16px] font-bold text-tf-text">Modifier — {selected.full_name}</h3>
             <div className="space-y-3">
               <div>
-                <label className="font-sans text-[11px] font-bold text-tf-text-muted uppercase tracking-wider block mb-1.5">Rôle</label>
+                <label htmlFor="role-select" className="font-sans text-[11px] font-bold text-tf-text-muted uppercase tracking-wider block mb-1.5">Rôle</label>
                 <select
                   defaultValue={selected.role}
                   id="role-select"
@@ -166,7 +172,7 @@ export default function UtilisateursPage() {
                 </select>
               </div>
               <div>
-                <label className="font-sans text-[11px] font-bold text-tf-text-muted uppercase tracking-wider block mb-1.5">Score de confiance (0-5)</label>
+                <label htmlFor="score-input" className="font-sans text-[11px] font-bold text-tf-text-muted uppercase tracking-wider block mb-1.5">Score de confiance (0-5)</label>
                 <input
                   id="score-input"
                   type="number"

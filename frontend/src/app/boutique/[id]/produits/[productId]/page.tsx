@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, Share2, ChevronLeft, Check, Info } from "lucide-react";
-import { api } from "@/lib/api";
+import { api, getApiErrorMessage } from "@/lib/api";
 import { cn, formatPrix, getRemisePercent } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
+import { useCart } from "@/hooks/useCart";
+import { useAuthStore } from "@/store/auth";
 import type { Product, SizeRecommendation } from "@/types/product";
 
 async function fetchProduct(id: string): Promise<Product> {
@@ -28,10 +30,12 @@ const OCCASION_LABELS: Record<string, string> = {
 
 export default function ProductPage() {
   const { id: shopId, productId } = useParams<{ id: string; productId: string }>();
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
+  const { addItem } = useCart();
   const [activeImg, setActiveImg] = useState(0);
   const [liked, setLiked] = useState(false);
   const [selectedTaille, setSelectedTaille] = useState<string | null>(null);
-  const [addedToCart, setAddedToCart] = useState(false);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", productId],
@@ -70,8 +74,15 @@ export default function ProductPage() {
   const enRupture = product.stock_statut === "rupture";
 
   const handleAddToCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    if (!isAuthenticated) {
+      router.push("/auth/login");
+      return;
+    }
+    addItem.mutate({
+      product_id: Number(productId),
+      taille: selectedTaille ?? undefined,
+      quantite: 1,
+    });
   };
 
   return (
@@ -228,16 +239,16 @@ export default function ProductPage() {
             <div className="flex gap-3 pt-2">
               <button
                 onClick={handleAddToCart}
-                disabled={enRupture || (tailles.length > 0 && !selectedTaille)}
+                disabled={enRupture || addItem.isPending || (tailles.length > 0 && !selectedTaille)}
                 className={cn(
                   "flex-1 py-3.5 rounded-md text-btn font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tf-black focus-visible:ring-offset-2",
-                  addedToCart
+                  addItem.isSuccess
                     ? "bg-tf-success text-white"
                     : "bg-tf-gold text-tf-black hover:bg-tf-gold-light",
-                  (enRupture || (tailles.length > 0 && !selectedTaille)) && "opacity-50 cursor-not-allowed"
+                  (enRupture || addItem.isPending || (tailles.length > 0 && !selectedTaille)) && "opacity-50 cursor-not-allowed"
                 )}
               >
-                {enRupture ? "Rupture de stock" : addedToCart ? "Ajouté ✓" : "Ajouter au panier"}
+                {enRupture ? "Rupture de stock" : addItem.isPending ? "Ajout..." : addItem.isSuccess ? "Ajouté ✓" : "Ajouter au panier"}
               </button>
               <button
                 onClick={() => setLiked(!liked)}
@@ -257,6 +268,12 @@ export default function ProductPage() {
                 <Share2 size={18} />
               </button>
             </div>
+
+            {addItem.isError && (
+              <p role="alert" className="text-nav text-tf-error">
+                {getApiErrorMessage(addItem.error, "Impossible d'ajouter cet article au panier.")}
+              </p>
+            )}
 
             {/* Description */}
             {product.description && (

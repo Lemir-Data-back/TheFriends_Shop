@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Import Google Fonts ──────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 /* ─── Variables CSS TheFriends ─────────────────────────────────────── */
 /* Doit rester identique à theme.extend.colors dans tailwind.config.ts —
    ces variables existent pour les valeurs de couleur dynamiques (style
@@ -13,6 +10,7 @@
   --tf-black: #111111;
   --tf-charbon: #1C1C1C;
   --tf-gold: #C9A84C;
+  --tf-gold-rgb: 201, 168, 76;
   --tf-gold-light: #F0D080;
   --tf-gold-dark: #B8892A;
   --tf-bg: #FDFCFA;
@@ -23,6 +21,7 @@
   --tf-text-muted: #7A766F;
   --tf-success: #2D6A4F;
   --tf-success-bg: #D8F3DC;
+  --tf-success-dark: #25593F;
   --tf-error: #C0392B;
   --tf-error-bg: #FFCCCC;
   --tf-error-soft: #FFF0F0;

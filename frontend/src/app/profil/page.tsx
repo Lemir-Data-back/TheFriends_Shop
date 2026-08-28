@@ -32,7 +32,7 @@ interface Profil {
 // ── Constantes ────────────────────────────────────────────────────────────────
 
 const SCORE_STATUTS: Record<string, { label: string; color: string }> = {
-  premium:  { label: "Client Premium ⭐", color: "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark" },
+  premium:  { label: "Client Premium ⭐", color: "bg-tf-gold/[0.15] text-tf-gold-dark" },
   fiable:   { label: "Client Fiable ✓",  color: "bg-tf-success-bg text-tf-success" },
   standard: { label: "Client Standard",   color: "bg-tf-gray-soft text-tf-text-muted" },
   surveille:{ label: "Surveillé ⚠️",       color: "bg-tf-warning-bg text-tf-warning" },
@@ -49,7 +49,7 @@ function getStatut(score: number) {
 
 // ── Sous-composants ───────────────────────────────────────────────────────────
 
-const inputClass = "w-full px-3 py-2.5 rounded-lg border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-[rgba(201,168,76,0.2)] transition-colors"
+const inputClass = "w-full px-3 py-2.5 rounded-lg border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-tf-gold/20 transition-colors"
 const labelClass = "block font-sans text-[12px] font-semibold text-tf-text-muted uppercase tracking-wider mb-1.5"
 
 function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
@@ -129,7 +129,7 @@ function BadgesSection({ stats }: { stats: StatsData }) {
                     >
                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-[26px] border-2 transition-all ${
                         unlocked
-                          ? "border-tf-gold bg-[rgba(201,168,76,0.1)] shadow-gold"
+                          ? "border-tf-gold bg-tf-gold/10 shadow-gold"
                           : "border-tf-border bg-tf-gray-soft"
                       }`}>
                         {unlocked ? b.emoji : <Lock size={18} className="text-tf-border" />}
@@ -490,7 +490,7 @@ function ProfilContent() {
                 type="tel"
                 aria-invalid={!!phoneError}
                 aria-describedby={phoneError ? "profil-phone-error" : undefined}
-                className={`${inputClass} ${phoneError ? "border-tf-error ring-2 ring-[rgba(192,57,43,0.15)]" : ""}`}
+                className={`${inputClass} ${phoneError ? "border-tf-error ring-2 ring-tf-error/[0.15]" : ""}`}
                 value={phone}
                 onChange={e => { setPhone(e.target.value); setPhoneError("") }}
                 placeholder="+225 07 00 00 00 00"
@@ -522,6 +522,7 @@ function ProfilContent() {
         <button
           onClick={handleSave}
           disabled={isPending}
+          aria-live="polite"
           className="btn-gold flex-1 rounded-lg text-[14px] flex items-center justify-center gap-2"
         >
           <Save size={16} />

@@ -59,10 +59,10 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-sm bg-white rounded-xl border border-tf-border p-8">
-      <h2 className="font-sans text-h3 font-semibold text-tf-text mb-6">Connexion</h2>
+      <h1 className="font-sans text-h3 font-semibold text-tf-text mb-6">Connexion</h1>
 
       {error && (
-        <div className="mb-4 p-3 bg-tf-error-bg border border-tf-error rounded-md">
+        <div role="alert" className="mb-4 p-3 bg-tf-error-bg border border-tf-error rounded-md">
           <p className="font-sans text-[13px] text-tf-error">{error}</p>
         </div>
       )}
@@ -103,7 +103,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 rounded-md text-tf-text-muted hover:text-tf-text transition-colors"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 rounded-md text-tf-text-muted hover:text-tf-text transition-colors before:absolute before:-inset-1.5 before:content-['']"
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>

@@ -18,7 +18,7 @@ const MENSURATION_LABELS: Record<string, string> = {
 };
 
 function scoreBadgeClass(score: number): string {
-  if (score >= 4.5) return "bg-[rgba(201,168,76,0.15)] text-tf-gold-dark";
+  if (score >= 4.5) return "bg-tf-gold/[0.15] text-tf-gold-dark";
   if (score >= 3.5) return "bg-tf-success-bg text-tf-success";
   if (score >= 2.5) return "bg-tf-gray-soft text-tf-text-muted";
   return "bg-tf-error-bg text-tf-error";
@@ -39,7 +39,7 @@ function OrderCardSeller({ order }: { order: Order }) {
   return (
     <Link
       href={`/commandes/${order.id}`}
-      className="block bg-white rounded-xl border border-tf-border p-4 hover:border-[rgba(201,168,76,0.4)] hover:shadow-card transition-all"
+      className="block bg-white rounded-xl border border-tf-border p-4 hover:border-tf-gold/40 hover:shadow-card transition-all"
     >
       {/* Référence + statut */}
       <div className="flex items-center justify-between gap-2 mb-3">
@@ -211,7 +211,7 @@ export default function CommandesPage() {
               <Link
                 key={order.id}
                 href={`/commandes/${order.id}`}
-                className="block bg-white rounded-xl border border-tf-border p-4 hover:border-[rgba(201,168,76,0.4)] hover:shadow-card transition-all"
+                className="block bg-white rounded-xl border border-tf-border p-4 hover:border-tf-gold/40 hover:shadow-card transition-all"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">

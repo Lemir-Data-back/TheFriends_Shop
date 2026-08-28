@@ -32,7 +32,7 @@ const SPECIALITES_OPTIONS = [
   { group: "Occasions", items: ["cérémonie", "casual", "bureau", "mariage", "sport"] },
 ]
 
-const inputClass = "w-full px-3 py-2.5 rounded-lg border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-[rgba(201,168,76,0.2)] transition-colors"
+const inputClass = "w-full px-3 py-2.5 rounded-lg border border-tf-border bg-white text-tf-text font-sans text-[14px] placeholder:text-tf-text-muted focus:outline-none focus:border-tf-gold focus:ring-2 focus:ring-tf-gold/20 transition-colors"
 const labelClass = "block font-sans text-[12px] font-semibold text-tf-text-muted uppercase tracking-wider mb-1.5"
 
 export function ProfilSection({ role }: { role: "couturier" | "vendeur" }) {
@@ -151,12 +151,12 @@ export function ProfilSection({ role }: { role: "couturier" | "vendeur" }) {
               <input
                 id="prof-phone"
                 type="tel"
-                className={`${inputClass} ${phoneError ? "border-tf-error ring-2 ring-[rgba(192,57,43,0.15)]" : ""}`}
+                className={`${inputClass} ${phoneError ? "border-tf-error ring-2 ring-tf-error/[0.15]" : ""}`}
                 value={phone}
                 onChange={(e) => { setPhone(e.target.value); setPhoneError("") }}
                 placeholder="+225 07 00 00 00 00"
               />
-              {phoneError && <p className="font-sans text-[11px] text-tf-error mt-1">{phoneError}</p>}
+              {phoneError && <p role="alert" className="font-sans text-[11px] text-tf-error mt-1">{phoneError}</p>}
             </div>
             {profil?.email && (
               <div className="flex items-center justify-between py-1">
